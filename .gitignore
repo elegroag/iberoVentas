@@ -1,0 +1,10 @@
+
+node_modules/
+.vscode/
+*.sftp
+*.zip
+*.rar
+*.tar
+*.tar.bz2
+*.tar.gz
+
