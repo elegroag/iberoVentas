@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "bundler",
+		"target": "ES5",
+		"module": "ES2015",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"checkJs": true
+	},
+	"include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte", "public/global.js"]
+}
