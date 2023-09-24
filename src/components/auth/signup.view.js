@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Backbone from "backbone";
 import _ from "underscore";
+import Auth from "../../models/auth.model";
 
 const ViewSignup = Backbone.View.extend({
 	render: function () {
@@ -16,7 +17,47 @@ const ViewSignup = Backbone.View.extend({
 	},
 	sendAction: function (e) {
 		e.preventDefault();
-		console.log("OK");
+		let scope = this;
+		let formData = $("form").serializeArray();
+		let token = {};
+		_.each(formData, (row, item) => {
+			token[row.name] = row.value;
+		});
+
+		let entity = new Auth(token);
+		if (!entity.isValid()) {
+			Auth.renderErrors(entity.validationError);
+			return false;
+		}
+
+		console.log("entity", entity.toJSON());
+		if (window.confirm("Confirma que los datos son correctos para continuar") === false) {
+			return false;
+		} else {
+			Backbone.emulateJSON = true;
+			Backbone.ajax({
+				method: "POST",
+				url: "http://localhost:3000/auth/login",
+				dataType: "JSON",
+				data: entity.toJSON()
+			})
+				.done((res) => {
+					if (res.success == true) {
+						alert("Ok la cuenta es correcta para continuar");
+						scope.model.router.navigate("perfil" + res.entity.cedula, { trigger: true, replace: true });
+					}
+				})
+				.fail((err) => {
+					let error;
+					if (err.status == 0) {
+						error = err.statusText + ", no hay respuesta del servidor.";
+					} else {
+						error = err.responseText;
+					}
+					alert("Error, en la autenticación del usuario \n" + error);
+				})
+				.always(() => {});
+		}
 	},
 	loginAction: function (e) {
 		e.preventDefault();

@@ -21,7 +21,6 @@
     "jquery": "^3.7.1",
     "mongoose": "^7.5.2",
     "morgan": "~1.9.1",
-    "requirejs": "^2.3.6",
     "serve-favicon": "^2.5.0",
     "underscore": "^1.13.6"
   },
