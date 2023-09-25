@@ -6,7 +6,7 @@
     "start": "node ./bin/server.js",
     "dev": "nodemon ./bin/server.js",
     "api-dev": "webpack-dev-server --open --mode development",
-    "api-build": "webpack --mode production"
+    "api-build": "webpack --mode production && mv -f public/index.html views/"
   },
   "dependencies": {
     "backbone": "^1.5.0",
