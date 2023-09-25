@@ -52,12 +52,31 @@ var Workspace = Backbone.Router.extend(
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
 		},
-		perfil: () => {
-			Workspace.createContainer();
-			let model = { router: Workspace.router };
-			let view = new ViewPerfil({ el: "#contentApp", model: model });
-			Workspace.ViewActive = view.render().el;
-			Workspace.posRenderForm();
+		perfil: (cedula) => {
+			let scope = this;
+			if(_.isNull(cedula) || _.isUndefined(cedula)){
+				scope.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem('token');
+			if(_.isNull(token) || _.isUndefined(token)){
+				scope.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+
+			Workspace.validaAuthToken(token, (entity) => {
+				if(_.isNull(entity)){
+					alert('La session ha finalizado');
+					scope.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					Workspace.createContainer();
+					let model = { router: Workspace.router, entity: entity };
+					let view = new ViewPerfil({ el: "#contentApp", model: model });
+					Workspace.ViewActive = view.render().el;
+					Workspace.posRenderForm();
+				}
+			});
 		},
 		home: () => {
 			Workspace.createContainer();
@@ -100,6 +119,36 @@ var Workspace = Backbone.Router.extend(
 					textarea.style.height = `${scrollHeight}px`;
 				});
 			});
+		},
+		validaAuthToken: async (token,  callback = void 0) => {
+			Backbone.ajax({
+				type : "GET",
+				url: "http://localhost:3000/profile",
+				dataType: "JSON",
+				beforeSend: (xhr) => {
+					xhr.setRequestHeader('Authentication', token);
+				}
+			})
+				.done((res) => {
+					if (res.success == true) {
+						callback(res.entity);
+					}else{
+						callback(null);
+					}
+				})
+				.fail((err) => {
+					let error;
+					if (err.status == 0) {
+						error = err.statusText + ", no hay respuesta del servidor.";
+					} else {
+						error = err.responseText;
+					}
+					console.log('Error', error);
+					callback(null);
+				});
+		},
+		closeApp: () => {
+
 		}
 	}
 );

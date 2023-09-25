@@ -1,144 +1,116 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>API Cliente Ibero Ventas</title>
-		<link rel="stylesheet" href="./css/app.css" />
-		<script src="global.js"></script>
-		<script defer="defer" src="bundle.js"></script>
-	</head>
-	<body>
-		<script type="text/template" id="tmp_login">
-			<h1>LOGIN</h1>
-			    <form>
-			      <div class="text writing">
-			        <input type="text" id="cedula" name="cedula" required>
-			        <label for="cedula">Número de cedula</label>
-			        <span></span>
-			        <p class='help-error' data-alert='cedula'></p>
-			      </div>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>API Cliente Ibero Ventas</title><link rel="stylesheet" href="./css/app.css"/><script src="global.js"></script><script defer="defer" src="bundle.js"></script></head><body><script type="text/template" id="tmp_login"><h1>LOGIN</h1>
+			<form>
+			  <div class="text writing">
+			    <input type="text" id="cedula" name="cedula" required>
+			    <label for="cedula">Número de cedula</label>
+			    <span></span>
+			    <p class='help-error' data-alert='cedula'></p>
+			  </div>
 
-			      <div class="password writing">
-			        <input type="password" id="clave" name="clave">
-			        <label for="clave">Contraseña</label>
-			        <span></span>
-			        <p class='help-error' data-alert='clave'></p>
-			      </div>
+			  <div class="password writing">
+			    <input type="password" id="clave" name="clave">
+			    <label for="clave">Contraseña</label>
+			    <span></span>
+			    <p class='help-error' data-alert='clave'></p>
+			  </div>
 
-			      <div class="submit">
-			        <br/>
-			        <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
-			        <br/> <br/>
-			        <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
-			        <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
-			        <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
-			      </div>
-			    </form>
-		</script>
-		<script type="text/template" id="tmp_signup">
-			<h1>REGISTRAR</h1>
-			    <form>
+			  <div class="submit">
+			    <br/>
+			    <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
+			    <br/> <br/>
+			    <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
+			    <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
+			    <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
+			  </div>
+			</form></script><script type="text/template" id="tmp_signup"><h1>REGISTRAR</h1>
+			<form>
 
-			      <div class="text writing">
-			        <input type="text" id="cedula" name="cedula" required>
-			        <label for="nombre">Cedula</label>
-			        <span></span>
-			      </div>
+			  <div class="text writing">
+			    <input type="text" id="cedula" name="cedula" required>
+			    <label for="nombre">Cedula</label>
+			    <span></span>
+			  </div>
 
-			      <div class="text writing">
-			        <input type="text" id="nombre" name="nombre" required>
-			        <label for="nombre">Nombres</label>
-			        <span></span>
-			      </div>
+			  <div class="text writing">
+			    <input type="text" id="nombre" name="nombre" required>
+			    <label for="nombre">Nombres</label>
+			    <span></span>
+			  </div>
 
-			      <div class="text writing">
-			        <input type="text" id="apellidos" name="apellidos" required>
-			        <label for="nombre">Apellidos</label>
-			        <span></span>
-			      </div>
+			  <div class="text writing">
+			    <input type="text" id="apellidos" name="apellidos" required>
+			    <label for="nombre">Apellidos</label>
+			    <span></span>
+			  </div>
 
-			      <div class="text writing">
-			        <input type="text" id="email" name="email" required>
-			        <label for="nombre">Email</label>
-			        <span></span>
-			      </div>
+			  <div class="text writing">
+			    <input type="text" id="email" name="email" required>
+			    <label for="nombre">Email</label>
+			    <span></span>
+			  </div>
 
-			      <div class="password writing">
-			        <input type="password" id="contrasena" name="contrasena">
-			        <label for="contrasena">Contraseña</label>
-			        <span></span>
-			      </div>
+			  <div class="password writing">
+			    <input type="password" id="contrasena" name="contrasena">
+			    <label for="contrasena">Contraseña</label>
+			    <span></span>
+			  </div>
 
-			      <div class="submit">
-			        <br/>
-			        <button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
-			        <br/> <br/>
-			        <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
-			        <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
-			        <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
-			      </div>
-			    </form>
-		</script>
-		<script type="text/template" id="tmp_change_pass">
-			<h1>CAMBIAR DE CLAVE</h1>
-			    <form>
-			      <div class="text writing">
-			        <input type="text" id="cedula" name="cedula" required>
-			        <label for="cedula">Cedula</label>
-			        <span></span>
-			      </div>
+			  <div class="submit">
+			    <br/>
+			    <button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
+			    <br/> <br/>
+			    <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
+			    <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
+			    <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
+			  </div>
+			</form></script><script type="text/template" id="tmp_change_pass"><h1>CAMBIAR DE CLAVE</h1>
+			<form>
+			  <div class="text writing">
+			    <input type="text" id="cedula" name="cedula" required>
+			    <label for="cedula">Cedula</label>
+			    <span></span>
+			  </div>
 
-			      <div class="password writing">
-			        <input type="password" id="clave_old" name="clave_old">
-			        <label for="contrasena">Contraseña actual</label>
-			        <span></span>
-			      </div>
+			  <div class="password writing">
+			    <input type="password" id="clave_old" name="clave_old">
+			    <label for="contrasena">Contraseña actual</label>
+			    <span></span>
+			  </div>
 
-			      <div class="password writing">
-			        <input type="password" id="clave_new" name="clave_new">
-			        <label for="contrasena">Contraseña nueva</label>
-			        <span></span>
-			      </div>
+			  <div class="password writing">
+			    <input type="password" id="clave_new" name="clave_new">
+			    <label for="contrasena">Contraseña nueva</label>
+			    <span></span>
+			  </div>
 
-			      <div class="submit">
-			        <br/>
-			        <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
-			        <br/> <br/>
-			        <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
-			        <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
-			        <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
-			      </div>
-			    </form>
-		</script>
-		<script type="text/template" id="tmp_recovery_user">
-			<h1>OLVIDO LA CLAVE</h1>
-			    <form>
-			      <div class="text writing">
-			        <input type="text" id="cedula" name="cedula" required>
-			        <label for="nombre">Cedula</label>
-			        <span></span>
-			      </div>
+			  <div class="submit">
+			    <br/>
+			    <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
+			    <br/> <br/>
+			    <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
+			    <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
+			    <a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
+			  </div>
+			</form></script><script type="text/template" id="tmp_recovery_user"><h1>OLVIDO LA CLAVE</h1>
+			<form>
+			  <div class="text writing">
+			    <input type="text" id="cedula" name="cedula" required>
+			    <label for="nombre">Cedula</label>
+			    <span></span>
+			  </div>
 
-			      <div class="text writing">
-			        <input type="text" id="email" name="email" required>
-			        <label for="nombre">Email</label>
-			        <span></span>
-			      </div>
+			  <div class="text writing">
+			    <input type="text" id="email" name="email" required>
+			    <label for="nombre">Email</label>
+			    <span></span>
+			  </div>
 
-			      <div class="submit">
-			        <br/>
-			        <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
-			        <br/> <br/>
-			        <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
-			        <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
-			        <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
-			      </div>
-			    </form>
-		</script>
-		<script type="text/template" id="tmp_perfil">
-			<h1>PERFIL</h1>
-		</script>
-		<div id="app"></div>
-	</body>
-</html>
+			  <div class="submit">
+			    <br/>
+			    <button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
+			    <br/> <br/>
+			    <a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a>
+			    <a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a>
+			    <a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
+			  </div>
+			</form></script><script type="text/template" id="tmp_perfil"><h1>PERFIL</h1></script><div id="app"></div></body></html>

@@ -6,15 +6,29 @@ const { jwtOpt } = require("../bin/config");
 //User model
 const User = require("../models/user");
 
-const isAuthToken = ({ session }, res, next) => {
-	if (!session.user)
-		res.status(403).json({
-			status: "You are not logged in!"
+const isAuthToken = (req, res, next) => {
+	if (!req.headers.authorization){
+		return res
+			.status(403)
+			.send({ message: "Tu petición no tiene cabecera de autorización" });
+	} else {
+		const token = req.headers.authorization.split(" ")[1];
+		jwt.verify(token, config.jwtOpt.secretOrKey, (err, decoded) => {
+			if (err) {
+				err = {
+					name: 'TokenExpiredError',
+					message: 'El token ha expirado',
+					decoded: decoded
+				}
+				return res.status(401).send(err);
+			} else {
+				console.log('Ok la validación de token');
+				next(decoded);
+			}
 		});
-	else next();
+	}
 };
 
-/* GET listing view. */
 router.get("/", async function (req, res, next) {
 	res.render('index', { 
 		locals: {
@@ -36,77 +50,104 @@ router.post("/login", async function (req, res, next) {
 		const { body } = req;
 		const { cedula, clave } = body;
 		// const user = await User.login(cedula, clave);
-		const user = await User.findOne({ cedula: cedula, clave: clave });
+		const user = await User.findOne().where("cedula").equals(cedula).where("clave").equals(clave);
+		if(user){
+			const payload = {
+				cedula: user.cedula,
+				mail: user.email,
+				user: user.nombres + " " + user.apellidos
+			};
 
-		const payload = {
-			cedula: user.cedula,
-			mail: user.email,
-			user: user.nombres + " " + user.apellidos
-		};
+			jwt.sign(payload, jwtOpt.secretOrKey, { expiresIn: jwtOpt.expiresIn }, (err, token) => {
+				user.token = token;
+				user.save();
 
-		jwt.sign(payload, jwtOpt.secretOrKey, { expiresIn: jwtOpt.expiresIn }, (err, token) => {
-			user.token = token;
-			user.save();
-
-			res.status(200).json({
-				success: true,
-				token: jwtOpt.type + " " + token
+				res.status(200).json({
+					success: true,
+					entity: {
+						cedula: user.cedula,
+						nombres: user.nombres,
+						apellidos: user.apellidos,
+						email: user.email,
+						celular: user.celular,
+					},
+					token: jwtOpt.type + " " + token
+				});
 			});
-		});
+		}else{
+			res.status(203).json({ success: false, error: "Usuario no existe en la base" });
+		}
 	} catch (error) {
-		res.status(403).json({ error: error.message });
+		res.status(403).json({ success: false, error: error.message });
 	}
 });
 
-router.post("/logout", isAuthToken, (req, res) => {
-	/* req.session.destroy();
-	res.status(200).send({ status: "Bye bye!" }); */
+router.post("/logout", isAuthToken, async function(req, res) {
+	const { body } = req;
+	const { cedula } = body;
+	const user = await User.findById(cedula);
+	user.token = null;
+	user.save();
+	res.status(200).send({ success: true, status: "Bye bye!" });
 });
 
 router.post("/signup", async (req, res) => {
 	try {
-		/* const { session, body } = req;
+		const { body } = req;
 		const { cedula, clave } = body;
-		const user = await User.signup(cedula, clave);
-		res.status(201).json({ status: "Created!" }); */
+		const user = await User.signup(cedula, clave, body);
+		if(user){
+			jwt.sign(payload, jwtOpt.secretOrKey, { expiresIn: jwtOpt.expiresIn }, (err, token) => {
+				user.token = token;
+				user.save();
+				res.status(201).json({ success: true, token: jwtOpt.type + " " + token  });
+			});
+			
+		} else {
+			res.status(203).json({ success: false, error: "Error en el registro de usuario" });
+		}
 	} catch (error) {
-		res.status(403).json({ error: error.message });
+		res.status(403).json({ success: false, error: error.message });
 	}
 });
 
 router.get("/profile", isAuthToken, (req, res) => {
-	/* const { user } = req.session;
-	res.status(200).json({ user }); */
+	res.status(200).json(req.body);
 });
 
-router.put("/changepass", isAuthToken, async (req, res) => {
+router.post("/changepass", async (req, res) => {
 	try {
-		/* const { session, body } = req;
-		const { clave } = body;
-		const { _id } = session.user;
-		const user = await User.findOne({ _id });
+		const { body } = req;
+		const { cedula, clave_vieja, clave_nueva } = body;
+		const user = await User.login(cedula, clave_vieja);
 		if (user) {
-			await user.changePass(clave);
-			res.status(200).json({ status: "Clave changed" });
+			await user.changePass(clave_nueva);
+			res.status(201).json({ success: true, status: "Clave changed" });
 		} else {
-			res.status(403).json({ status: user });
-		} */
+			res.status(203).json({ success: false, error: "No son validas las credenciales de usuario."});
+		}
 	} catch (error) {
-		res.status(403).json({ error: error.message });
+		res.status(403).json({success: false, error: error.message });
 	}
 });
 
-router.delete("/delete", isAuthToken, async (req, res) => {
+router.post("/recovery", async (req, res) => {
 	try {
-		/* const { _id } = req.session.user;
-		const user = await User.findOne({ _id });
-		await user.remove();
-		req.session.destroy((err) => {
-			if (err) throw new Error(err);
-			res.status(200).json({ status: "Deleted!" });
-		}); */
+		const { body } = req;
+		const { cedula, email } = body;
+		const user = await User.findOne().where("cedula").equals(cedula).where("email").equals(email);
+		if (user) {
+			const change = await user.createPasswors();
+			if(change){
+				res.status(201).json({ success: true, status: "Clave changed", clave: change.clave });
+			} else {
+				res.status(203).json({ success: false, error: "La recuperación de la cuenta no es posible"});
+			}
+		} else {
+			res.status(203).json({ success: false, error: "El usuario no es valido para recuperar los datos"});
+		}
 	} catch (error) {
-		res.status(403).json({ error: error.message });
+		res.status(403).json({ success: false, error: error.message });
 	}
 });
 

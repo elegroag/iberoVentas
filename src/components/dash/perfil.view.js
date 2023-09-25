@@ -4,7 +4,7 @@ import _ from "underscore";
 
 const ViewPerfil = Backbone.View.extend({
 	render: function () {
-		let template = _.template(document.getElementById("tmp_home").innerHTML);
+		let template = _.template(document.getElementById("tmp_perfil").innerHTML);
 		$(this.$el).html(template());
 		return this;
 	},
