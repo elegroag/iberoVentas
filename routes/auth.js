@@ -14,9 +14,21 @@ const isAuthToken = ({ session }, res, next) => {
 	else next();
 };
 
-/* GET login listing view. */
-router.get("/login", async function (req, res, next) {
-	res.render("index", { title: "Login ApiRest" });
+/* GET listing view. */
+router.get("/", async function (req, res, next) {
+	res.render('index', { 
+		locals: {
+			title: 'Welcome Express!'}
+		}
+	);
+});
+
+router.get("/auth", async function (req, res, next) {
+	res.render('index', { 
+		locals: {
+			title: 'Welcome Express!'}
+		}
+	);
 });
 
 router.post("/login", async function (req, res, next) {
