@@ -18,8 +18,9 @@ const UserSchema = new Schema({
 	nombres: { type: String, required: true, maxlength: 60 },
 	apellidos: { type: String, required: true, maxlength: 60 },
 	email: { type: String, required: true, maxlength: 100 },
-	celular: { type: String, required: false, maxlength: 10 },
-	clave: { type: String, required: true, maxlength: 225, minlength: 5 }
+	celular: { type: String, required: false, maxlength: 13 },
+	clave: { type: String, required: true, maxlength: 225, minlength: 5 },
+	token: { type: String, required: false }
 });
 
 UserSchema.static("login", async function (cedula, pwd) {
@@ -52,6 +53,12 @@ UserSchema.method("changePass", async function (pwd) {
 	const hash = crypto.createHash("sha256").update(pwd);
 	this.clave = hash.digest("hex");
 	return this.save();
+});
+
+UserSchema.method("isValidPassword", async function (pwd) {
+	const user = this;
+	const compare = crypto.createHash("sha256").update(pwd) === user.clave;
+	return compare;
 });
 
 module.exports = mongoose.model("users", UserSchema);
