@@ -4,8 +4,10 @@ const crypto = require("crypto");
 
 const UserSchema = new Schema({
 	cedula: {
+		index: true,
 		type: Number,
 		minlength: 6,
+		unique: true,
 		maxlength: 16,
 		required: [true, "La cedula es un valor requerido"],
 		validate: {
@@ -18,8 +20,9 @@ const UserSchema = new Schema({
 	nombres: { type: String, required: true, maxlength: 60 },
 	apellidos: { type: String, required: true, maxlength: 60 },
 	email: { type: String, required: true, maxlength: 100 },
-	celular: { type: String, required: false, maxlength: 10 },
-	clave: { type: String, required: true, maxlength: 225, minlength: 5 }
+	celular: { type: String, required: false, maxlength: 13 },
+	clave: { type: String, required: true, maxlength: 225, minlength: 5 },
+	token: { type: String, required: false }
 });
 
 UserSchema.static("login", async function (cedula, pwd) {
@@ -30,28 +33,50 @@ UserSchema.static("login", async function (cedula, pwd) {
 	return user;
 });
 
-UserSchema.static("signup", async function (cedula, pwd) {
+UserSchema.static("signup", async function (cedula, pwd, data) {
 	if (pwd.length < 8) {
-		throw new Error("Pwd must have more than 6 chars");
+		throw new Error("Pwd must have more than 8 chars");
 	}
 	const hash = crypto.createHash("sha256").update(pwd);
 	const exist = await this.findOne().where("cedula").equals(cedula);
 	if (exist) throw new Error("La cedula already exists.");
-
-	const user = this.create({
-		cedula: cedula,
-		clave: hash.digest("hex")
-	});
+	
+	data.clave = hash.digest("hex"); 
+	const user = this.create(data);
 	return user;
 });
 
 UserSchema.method("changePass", async function (pwd) {
 	if (pwd.length < 8) {
-		throw new Error("Pwd must have more than 6 chars");
+		throw new Error("Pwd must have more than 8 chars");
 	}
 	const hash = crypto.createHash("sha256").update(pwd);
 	this.clave = hash.digest("hex");
 	return this.save();
+});
+
+UserSchema.method("isValidPassword", async function (pwd) {
+	const user = this;
+	const compare = crypto.createHash("sha256").update(pwd) === user.clave;
+	return compare;
+});
+
+UserSchema.method("createPasswors", async function(){
+	try {
+		var length = 8,
+		charset = "@#$&*.+-_123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$&*123456789abcdefghijkmnopqrstuvwxyz",
+		pwd = "";
+		for (var i = 0, n = charset.length; i < length; ++i) {
+			pwd += charset.charAt(Math.floor(Math.random() * n));
+		}
+		const hash = crypto.createHash("sha256").update(pwd);
+		this.clave = hash.digest("hex");
+		this.save();
+		return { clave: pwd, hash: this.clave};
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
 });
 
 module.exports = mongoose.model("users", UserSchema);
