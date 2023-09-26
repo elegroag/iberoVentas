@@ -5,7 +5,7 @@ import Auth from "../../models/auth.model";
 
 const ViewLogin = Backbone.View.extend({
 	initialize: function () {
-		console.log("View", "login");
+		console.log("View", "login 2023Elegro");
 	},
 	render: function () {
 		let template = _.template(document.getElementById("tmp_login").innerHTML);
@@ -45,11 +45,14 @@ const ViewLogin = Backbone.View.extend({
 				.done((res) => {
 					if (res.success == true) {
 						alert("Ok la cuenta es correcta para continuar");
-						window.sessionStorage.setItem('token', res.token);
-						window.sessionStorage.setItem('cedula', res.entity.cedula);
-						window.sessionStorage.setItem('username', res.entity.nombres+' '+res.entity.apellidos);
-						window.sessionStorage.setItem('email', res.entity.email);
-						scope.model.router.navigate("perfil/"  + res.entity.cedula, { trigger: true, replace: true });
+						let item = Math.floor(Math.random() * 4) + 1;
+						window.sessionStorage.setItem("token", res.token);
+						window.sessionStorage.setItem("cedula", res.entity.cedula);
+						window.sessionStorage.setItem("username", res.entity.nombres + " " + res.entity.apellidos);
+						window.sessionStorage.setItem("email", res.entity.email);
+						window.sessionStorage.setItem("avatar", "avatar" + item + ".png");
+
+						scope.model.router.navigate("perfil/" + res.entity.cedula, { trigger: true, replace: true });
 						scope.remove();
 					}
 				})

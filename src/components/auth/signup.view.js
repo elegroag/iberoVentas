@@ -37,14 +37,23 @@ const ViewSignup = Backbone.View.extend({
 			Backbone.emulateJSON = true;
 			Backbone.ajax({
 				method: "POST",
-				url: "http://localhost:3000/auth/login",
+				url: "http://localhost:3000/signup",
 				dataType: "JSON",
 				data: entity.toJSON()
 			})
 				.done((res) => {
 					if (res.success == true) {
 						alert("Ok la cuenta es correcta para continuar");
-						scope.model.router.navigate("perfil" + res.entity.cedula, { trigger: true, replace: true });
+
+						let item = Math.floor(Math.random() * 4) + 1;
+						window.sessionStorage.setItem("token", res.token);
+						window.sessionStorage.setItem("cedula", res.entity.cedula);
+						window.sessionStorage.setItem("username", res.entity.nombres + " " + res.entity.apellidos);
+						window.sessionStorage.setItem("email", res.entity.email);
+						window.sessionStorage.setItem("avatar", "avatar" + item + ".png");
+
+						scope.model.router.navigate(`perfil/${res.entity.cedula}`, { trigger: true, replace: true });
+						scope.remove();
 					}
 				})
 				.fail((err) => {

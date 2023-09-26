@@ -11,6 +11,6 @@
 		"skipLibCheck": true,
 		"checkJs": true
 	},
-	"include": ["src/**/*.js", "public/global.js"],
-	"exclude": ["src/**/*.d.ts", "node_modules/**/*.js"]
+	"include": ["src/**/*.js"],
+	"exclude": ["src/**/*.d.ts", "node_modules/**/*.js", "src/global.js", "public/**/*.js"]
 }

@@ -16,7 +16,41 @@ const ViewRecovery = Backbone.View.extend({
 	},
 	sendAction: function (e) {
 		e.preventDefault();
-		console.log("OK");
+		let scope = this;
+		let formData = $("form").serializeArray();
+		let token = {};
+		_.each(formData, (row, item) => {
+			token[row.name] = row.value;
+		});
+
+		if (window.confirm("Confirma que los datos son correctos para continuar") === false) {
+			return false;
+		} else {
+			Backbone.emulateJSON = true;
+			Backbone.ajax({
+				method: "POST",
+				url: "http://localhost:3000/recovery",
+				dataType: "JSON",
+				data: token
+			})
+				.done((res) => {
+					if (res.success == true) {
+						alert(`La cuenta se ha recuperado de forma correcta la nueva clave es: \n${res.clave}`);
+						scope.model.router.navigate("login", { trigger: true, replace: true });
+						scope.remove();
+					}
+				})
+				.fail((err) => {
+					let error;
+					if (err.status == 0) {
+						error = err.statusText + ", no hay respuesta del servidor.";
+					} else {
+						error = err.responseText;
+					}
+					alert("Error, en la autenticación del usuario \n" + error);
+				})
+				.always(() => {});
+		}
 	},
 	signupAction: function (e) {
 		e.preventDefault();

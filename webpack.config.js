@@ -1,43 +1,39 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-	entry: './src/main.js',
+	entry: "./src/main.js",
 	output: {
 		compareBeforeEmit: false,
-		path: path.resolve(__dirname, 'public/'),
-		filename: 'bundle.js',
+		path: path.resolve(__dirname, "public/"),
+		filename: "bundle.js"
 	},
 	resolve: {
-		extensions: ['.mjs', '.js'],
+		extensions: [".mjs", ".js"]
 	},
 	module: {
 		rules: [
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,
-				use: {
-					loader: 'babel-loader',
-				},
+				loader: "babel-loader"
 			},
 			{
-				test: /\.css?$/,
+				test: /\.html$/i,
 				exclude: /node_modules/,
-				use: {
-					loader: 'css-loader',
-				},
-			},
-		],
+				loader: "html-loader"
+			}
+		]
 	},
 	devServer: {
-		port: 3001,
+		port: 3001
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
 			inject: true,
-			template: './src/index.html',
-			filename: 'index.html',
-			port: 3001,
-		}),
-	],
+			template: "./src/index.html",
+			filename: "index.html",
+			port: 3001
+		})
+	]
 };
