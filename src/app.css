@@ -600,3 +600,53 @@ p.help-error {
 .d-none {
   display: none !important;
 }
+
+.card {
+  min-width: 800px;
+  padding: 15px 20px;
+  padding-top: 40px;
+  background-color: #f6e5da;
+  border-radius: 20px 10px;
+}
+
+.card h2 {
+  color: #864946;
+  font-weight: bold;
+}
+.card p {
+  color: #532e2c;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.card label {
+  color: #978686;
+}
+
+.form-group {
+  padding: 8px 10px;
+}
+
+.form-group label {
+  font-size: 1.2rem;
+}
+
+.table {
+  width: 100%;
+  border: none;
+  color: #777;
+  font-size: 1rem
+}
+
+.table tbody > tr > td,
+.table thead > tr > td {
+  border: 1px solid #777;
+  padding: 4px, 6px;
+}
+
+.close {
+  right: 0px;
+  margin: auto;
+  width: 100%;
+  text-align: right;
+}

@@ -17,17 +17,18 @@ node_modules
 dist
 dist-ssr
 *.local
-# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
 *.ntvs*
-*.njsproj
 *.sln
 *.sw?
-public/bundle.js
-public/bundle.js.LICENSE.txt
-public/index.html
-views/index.html
+public/
+!public/avatar1.png
+!public/avatar2.png
+!public/avatar3.png
+!public/avatar4.png
+!public/coffee.jpg
+!public/favicon.ico

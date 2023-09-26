@@ -19,7 +19,7 @@ var Workspace = Backbone.Router.extend(
 			signup: "signup",
 			changepass: "changepass",
 			recoveryuser: "recoveryUser",
-			home: "home",
+			"home/:cedula": "home",
 			"perfil/:cedula": "perfil", // #search/kiwis
 			"search/:query/p:page": "search" // #search/kiwis/p7
 		},
@@ -53,37 +53,53 @@ var Workspace = Backbone.Router.extend(
 			Workspace.posRenderForm();
 		},
 		perfil: (cedula) => {
-			let scope = this;
-			if(_.isNull(cedula) || _.isUndefined(cedula)){
-				scope.navigate("login", { trigger: true, replace: true });
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			let token = window.sessionStorage.getItem('token');
-			if(_.isNull(token) || _.isUndefined(token)){
-				scope.navigate("login", { trigger: true, replace: true });
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
 
-			Workspace.validaAuthToken(token, (entity) => {
-				if(_.isNull(entity)){
-					alert('La session ha finalizado');
-					scope.navigate("login", { trigger: true, replace: true });
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
 					Workspace.createContainer();
-					let model = { router: Workspace.router, entity: entity };
+					let model = { router: Workspace.router };
 					let view = new ViewPerfil({ el: "#contentApp", model: model });
 					Workspace.ViewActive = view.render().el;
 					Workspace.posRenderForm();
 				}
 			});
 		},
-		home: () => {
-			Workspace.createContainer();
-			let model = { router: Workspace.router };
-			let view = new ViewHome({ el: "#contentApp", model: model });
-			Workspace.ViewActive = view.render().el;
-			Workspace.posRenderForm();
+		home: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					Workspace.createContainer();
+					let model = { router: Workspace.router };
+					let view = new ViewHome({ el: "#contentApp", model: model });
+					Workspace.ViewActive = view.render().el;
+					Workspace.posRenderForm();
+				}
+			});
 		},
 		search: (query, page) => {
 			document.getElementById("app").innerHTML = "<h1>Search Option</h1>";
@@ -120,19 +136,20 @@ var Workspace = Backbone.Router.extend(
 				});
 			});
 		},
-		validaAuthToken: async (token,  callback = void 0) => {
+		validaAuthToken: async (token, callback = void 0) => {
 			Backbone.ajax({
-				type : "GET",
+				type: "GET",
 				url: "http://localhost:3000/profile",
 				dataType: "JSON",
 				beforeSend: (xhr) => {
-					xhr.setRequestHeader('Authentication', token);
+					xhr.setRequestHeader("Authentication", token);
 				}
 			})
 				.done((res) => {
 					if (res.success == true) {
-						callback(res.entity);
-					}else{
+						callback(res.success);
+					} else {
+						Workspace.closeApp();
 						callback(null);
 					}
 				})
@@ -143,12 +160,16 @@ var Workspace = Backbone.Router.extend(
 					} else {
 						error = err.responseText;
 					}
-					console.log('Error', error);
+					console.log("Error", error);
 					callback(null);
 				});
 		},
 		closeApp: () => {
-
+			window.sessionStorage.setItem("token", null);
+			window.sessionStorage.setItem("cedula", null);
+			window.sessionStorage.setItem("username", null);
+			window.sessionStorage.setItem("email", null);
+			window.sessionStorage.setItem("avatar", null);
 		}
 	}
 );

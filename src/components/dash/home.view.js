@@ -5,7 +5,14 @@ import _ from "underscore";
 const ViewHome = Backbone.View.extend({
 	render: function () {
 		let template = _.template(document.getElementById("tmp_home").innerHTML);
-		$(this.$el).html(template());
+		$(this.$el).html(
+			template({
+				cedula: window.sessionStorage.getItem("cedula"),
+				username: window.sessionStorage.getItem("username"),
+				email: window.sessionStorage.getItem("email"),
+				avatar: window.sessionStorage.getItem("avatar")
+			})
+		);
 		return this;
 	},
 	events: {
