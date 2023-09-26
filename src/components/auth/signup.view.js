@@ -2,6 +2,7 @@ import $ from "jquery";
 import Backbone from "backbone";
 import _ from "underscore";
 import Auth from "../../models/auth.model";
+import Utils from "../../lib/utils";
 
 const ViewSignup = Backbone.View.extend({
 	render: function () {
@@ -37,7 +38,7 @@ const ViewSignup = Backbone.View.extend({
 			Backbone.emulateJSON = true;
 			Backbone.ajax({
 				method: "POST",
-				url: "http://localhost:3000/signup",
+				url: Utils.getUrl("signup"),
 				dataType: "JSON",
 				data: entity.toJSON()
 			})

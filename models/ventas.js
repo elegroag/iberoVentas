@@ -11,7 +11,7 @@ const VentaSchema = new Schema({
     estado: Boolean,
     fecha: { type: Date, default: Date.now },
     valor: {type: Number },
-    user_cedula: {type: Number }
+    user_id: {type: Number }
 });
 
 module.exports = mongoose.model("ventas", VentaSchema);

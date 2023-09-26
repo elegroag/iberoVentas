@@ -9,10 +9,7 @@ const favicon = require("serve-favicon");
 const cors = require("cors");
 const mongoose = require("./database");
 const config = require("./bin/config");
-const passport = require("passport");
 const es6 = require("express-es6-template-engine");
-
-require("./bin/passport-auth");
 
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
@@ -48,7 +45,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", authRouter);
 app.use("/users", usersRouter);
-app.use("/ventas", passport.authenticate("access", { session: false }), ventasRouter);
+app.use("/ventas", ventasRouter);
 
 /*	
 app.use("/products", productsRouter);

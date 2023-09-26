@@ -8,6 +8,7 @@ import ViewChangepass from "./components/auth/changepass.view";
 import ViewRecoveryUser from "./components/auth/recovery_user.view";
 import ViewHome from "./components/dash/home.view";
 import ViewPerfil from "./components/dash/perfil.view";
+import Utils from "./lib/utils";
 
 var Workspace = Backbone.Router.extend(
 	{
@@ -87,15 +88,15 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			Workspace.validaAuthToken(token, (result) => {
-				if (_.isNull(result)) {
+			ViewHome.buscarListaVentas(token, (collection) => {
+				if (_.isNull(collection)) {
 					alert("La session ha finalizado");
 					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
 					Workspace.createContainer();
 					let model = { router: Workspace.router };
-					let view = new ViewHome({ el: "#contentApp", model: model });
+					let view = new ViewHome({ el: "#contentApp", model: model, collection: collection});
 					Workspace.ViewActive = view.render().el;
 					Workspace.posRenderForm();
 				}
@@ -139,7 +140,7 @@ var Workspace = Backbone.Router.extend(
 		validaAuthToken: async (token, callback = void 0) => {
 			Backbone.ajax({
 				type: "GET",
-				url: "http://localhost:3000/profile",
+				url: Utils.getUrl("profile"),
 				dataType: "JSON",
 				beforeSend: (xhr) => {
 					xhr.setRequestHeader("Authentication", token);

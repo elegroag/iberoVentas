@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Backbone from "backbone";
 import _ from "underscore";
+import Utils from "../../lib/utils";
 
 const ViewRecovery = Backbone.View.extend({
 	render: function () {
@@ -29,7 +30,7 @@ const ViewRecovery = Backbone.View.extend({
 			Backbone.emulateJSON = true;
 			Backbone.ajax({
 				method: "POST",
-				url: "http://localhost:3000/recovery",
+				url: Utils.getUrl("recovery"),
 				dataType: "JSON",
 				data: token
 			})
@@ -38,6 +39,8 @@ const ViewRecovery = Backbone.View.extend({
 						alert(`La cuenta se ha recuperado de forma correcta la nueva clave es: \n${res.clave}`);
 						scope.model.router.navigate("login", { trigger: true, replace: true });
 						scope.remove();
+					} else {
+						alert(`Error: \n${res.error}`);
 					}
 				})
 				.fail((err) => {

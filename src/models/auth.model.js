@@ -1,4 +1,4 @@
-import Backbone from "backbone";
+import Backbone, { $ } from "backbone";
 import _ from "underscore";
 
 const Auth = Backbone.Model.extend(
@@ -11,7 +11,8 @@ const Auth = Backbone.Model.extend(
 			nombres: void 0,
 			apellidos: void 0,
 			email: void 0,
-			clave: void 0
+			clave: void 0,
+			celular: void 0,
 		},
 		validate: (attrs, options) => {
 			let errors = {};
@@ -37,11 +38,11 @@ const Auth = Backbone.Model.extend(
 	{
 		renderErrors: function (errors) {
 			_.each(errors, (msj, key) => {
-				document.querySelector(`[data-alert="${key}"]`).textContent = "" + msj;
+				$(`[data-alert="${key}"]`).html(msj);
 			});
 			setTimeout(() => {
 				_.each(errors, (msj, key) => {
-					document.querySelector(`[data-alert="${key}"]`).textContent = "";
+					$(`[data-alert="${key}"]`).html("");
 				});
 			}, 3000);
 		}

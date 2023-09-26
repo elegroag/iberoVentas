@@ -1,6 +1,7 @@
 import Backbone from "backbone";
 import $ from "jquery";
 import _ from "underscore";
+import Utils from "../../lib/utils";
 
 const ViewChangePass = Backbone.View.extend({
 	render: function () {
@@ -29,7 +30,7 @@ const ViewChangePass = Backbone.View.extend({
 			Backbone.emulateJSON = true;
 			Backbone.ajax({
 				method: "POST",
-				url: "http://localhost:3000/changepass",
+				url: Utils.getUrl("changepass"), 
 				dataType: "JSON",
 				data: token
 			})
@@ -48,8 +49,7 @@ const ViewChangePass = Backbone.View.extend({
 						error = err.responseText;
 					}
 					alert("Error, en la autenticación del usuario \n" + error);
-				})
-				.always(() => {});
+				});
 		}
 	},
 	signupAction: function (e) {
