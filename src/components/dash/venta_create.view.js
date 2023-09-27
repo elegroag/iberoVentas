@@ -14,7 +14,18 @@ const ViewVentaCreate = Backbone.View.extend({
 		);
 		return this;
 	},
-	events: {}
+	events: {
+		"click #btnRegresar":"regresarAction"
+	},
+	regresarAction: function(e){
+		e.preventDefault();
+		if (window.confirm("Confirma que desea regresar a la lista de ventas") === false) {
+			return false;
+		} else {
+			this.model.router.navigate("home/" + window.sessionStorage.getItem("cedula"), { trigger: true });
+			this.remove();
+		}
+	}
 });
 
 export default ViewVentaCreate;
