@@ -1,29 +1,29 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 const clientes = [
-    {
-        "cid": "1",
-        "cedula": "1110491951",
-        "nombres": "edwin andres",
-        "apellidos":"legro agudelo"
-    },
-    {
-        "cid": "2",
-        "cedula": "1110491952",
-        "nombres": "alan felipe",
-        "apellidos":"paez herrera"
-    },
-    {
-        "cid": "3",
-        "cedula": "1110491956",
-        "nombres": "ricardo andres",
-        "apellidos":"velez corredor"
-    }
+	{
+		cid: "1",
+		cedula: "1110491951",
+		nombres: "Edwin Andres",
+		apellidos: "Legro Agudelo"
+	},
+	{
+		cid: "2",
+		cedula: "1110491952",
+		nombres: "Alan Felipe",
+		apellidos: "Paez Herrera"
+	},
+	{
+		cid: "3",
+		cedula: "1110491956",
+		nombres: "Ricardo Andres",
+		apellidos: "Velez Corredor"
+	}
 ];
 
-router.get('/all', function(req, res, next){
-    res.status(201).json({
+router.get("/all", function (req, res, next) {
+	res.status(201).json({
 		success: true,
 		collection: clientes
 	});
