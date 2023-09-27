@@ -22,14 +22,18 @@ const ViewPerfil = Backbone.View.extend({
 	},
 	closeAction: function (e) {
 		e.preventDefault();
-		window.sessionStorage.setItem("token", null);
-		window.sessionStorage.setItem("cedula", null);
-		window.sessionStorage.setItem("username", null);
-		window.sessionStorage.setItem("email", null);
-		window.sessionStorage.setItem("avatar", null);
+		if (window.confirm("Confirma que desea cerrar la sesión del usuario") === false) {
+			return false;
+		} else {
+			window.sessionStorage.setItem("token", null);
+			window.sessionStorage.setItem("cedula", null);
+			window.sessionStorage.setItem("username", null);
+			window.sessionStorage.setItem("email", null);
+			window.sessionStorage.setItem("avatar", null);
 
-		this.model.router.navigate("login", { trigger: true, replace: true });
-		this.remove();
+			this.model.router.navigate("login", { trigger: true, replace: true });
+			this.remove();
+		}
 	},
 	workerAction: function (e) {
 		e.preventDefault();

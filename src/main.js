@@ -3,7 +3,6 @@
 import $ from "jquery";
 import _ from "underscore";
 import Backbone from "backbone";
-import "./global";
 import Workspace from "./workspace";
 
 const router = new Workspace();

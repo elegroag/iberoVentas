@@ -1,106 +1,96 @@
-const config = require("./config");
+const { jwtOpt } = require("./config");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const passport = require("passport");
-const bearerStrategy = require("passport-http-bearer").Strategy;
-const localStrategy = require("passport-local").Strategy;
 
-const JWTStrategy = require("passport-jwt").Strategy;
-const ExtractJWT = require("passport-jwt").ExtractJwt;
-
-/**
- * @method access
- * @params [cedula], [clave]
- * @return object
- */
-passport.use(
-	"access",
-	new bearerStrategy(async (token, done) => {
+module.exports = {
+	validaToken: (req, res, next) => {
 		try {
-			const user = await User.findOne({ token: token });
-			if (!user) {
-				return done(null, false, { message: "User not found" });
+			if (!req.headers.authentication) {
+				return res.status(403).send({ message: "Tu petición no tiene cabecera de autorización" });
 			}
-			console.log("Token User OK");
-			return done(null, user, { scope: "all", message: "Login successfull" });
+			const token = req.headers.authentication.split(" ")[1];
+			jwt.verify(token, jwtOpt.secretOrKey, async (err, decoded) => {
+				if (err) {
+					let error = {
+						success: false,
+						message: "El token ha expirado",
+						error: err
+					};
+					return res.status(403).send(error);
+				}
+				req.decoded = decoded;
+				next();
+			});
+
 		} catch (e) {
-			return done(e);
+			let err = {
+				success: false,
+				message: "Error validation token",
+				error: e
+			};
+			return res.status(403).send(err);
 		}
-	})
-);
-
-/**
- * @method login
- * @params [cedula], [clave]
- * @return object
- */
-passport.use(
-	"login",
-	new localStrategy(
-		{
-			usernameField: "cedula",
-			passwordField: "clave"
-		},
-		async (cedula, clave, done) => {
-			try {
-				const user = await User.findById(cedula);
-				if (!user) {
-					return done(null, false, { message: "User not found" });
-				}
-
-				const validate = await user.isValidPassword(clave);
-
-				if (!validate) {
-					return done(null, false, { message: "Wrong password" });
-				}
-
-				return done(null, user, { message: "Login successfull" });
-			} catch (e) {
-				return done(e);
+	},
+	decodeUserToken: async (req, res, next)  => {
+		try {
+			if (!req.headers.authentication) {
+				return res.status(403).send({ message: "Tu petición no tiene cabecera de autorización" });
 			}
-		}
-	)
-);
+			const token = req.headers.authentication.split(" ")[1];
 
-/**
- * @method signup
- * @params [cedula], [clave]
- * @return bool
- */
-passport.use(
-	"signup",
-	new localStrategy(
-		{
-			usernameField: "cedula",
-			passwordField: "clave"
-		},
-		async (cedula, clave, done) => {
-			try {
-				const user = await User.findOne({ cedula: cedula, clave: clave });
-				if (user) {
-					return done(null, false, { message: "User ya está registrado" });
+			const decoded = jwt.verify(token, jwtOpt.secretOrKey);
+			if (decoded === undefined || decoded === '') {
+				let error = {
+					success: false,
+					message: "El token ha expirado",
+					error: decoded
+				};
+				return res.status(403).send(error);
+			}
+
+			const user = await User.findOne().where("token").equals(token);
+				
+			if (!user) {
+				let err = {
+					success: false,
+					message: "Token user ya no es valido para el usuario",
+					decoded: decoded
+				};
+				return res.status(403).send(err);
+			}
+
+			console.log("Login user successfull");
+			req.user = await user.fillable();
+			next();
+
+		} catch (e) {
+			let err = {
+				success: false,
+				message: "Error validation token user",
+				error: e
+			};
+			return res.status(403).send(err);
+		}
+	},
+	isAuthToken: (req, res, next) => {
+		if (!req.headers.authentication) {
+			return res.status(403).send({ success: false, message: "Tu petición no tiene cabecera de autorización" });
+		} else {
+			const token = req.headers.authentication.split(" ")[1];
+
+			jwt.verify(token, jwtOpt.secretOrKey, (err, decoded) => {
+				if (err) {
+					let error = {
+						success: false,
+						message: "El token ha expirado",
+						error: err
+					};
+					return res.status(403).send(error);
+				} else {
+					console.log("Ok la validación de token");
+					next();
 				}
-				return done(null, true);
-			} catch (e) {
-				done(e);
-			}
+			});
 		}
-	)
-);
-
-passport.use(
-	new JWTStrategy(
-		{
-			secretOrKey: config.jwtOpt.secretOrKey,
-			jwtFromRequest: ExtractJWT.fromUrlQueryParameter("secret_token")
-		},
-		async (token, done) => {
-			try {
-				console.log(token);
-				return done(null, token.user);
-			} catch (error) {
-				console.log(error);
-				done(error);
-			}
-		}
-	)
-);
+	}
+};

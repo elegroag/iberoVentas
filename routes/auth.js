@@ -5,28 +5,7 @@ const { jwtOpt } = require("../bin/config");
 
 //User model
 const User = require("../models/user");
-
-const isAuthToken = (req, res, next) => {
-	if (!req.headers.authentication) {
-		return res.status(403).send({ message: "Tu petición no tiene cabecera de autorización" });
-	} else {
-		const token = req.headers.authentication.split(" ")[1];
-		console.log("TK", token);
-		jwt.verify(token, jwtOpt.secretOrKey, (err, decoded) => {
-			if (err) {
-				err = {
-					name: "TokenExpiredError",
-					message: "El token ha expirado",
-					decoded: decoded
-				};
-				return res.status(203).send(err);
-			} else {
-				console.log("Ok la validación de token");
-				next();
-			}
-		});
-	}
-};
+const { isAuthToken } = require("../bin/passport-auth");
 
 router.get("/", async function (req, res, next) {
 	res.render("index", {
@@ -48,8 +27,7 @@ router.post("/login", async function (req, res, next) {
 	try {
 		const { body } = req;
 		const { cedula, clave } = body;
-
-		//const user = await User.findOne().where("cedula").equals(cedula).where("clave").equals(clave);
+		
 		const user = await User.login(cedula, clave);
 		if (user) {
 			const payload = {

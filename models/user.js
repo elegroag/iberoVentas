@@ -22,7 +22,7 @@ const UserSchema = new Schema({
 	email: { type: String, required: true, maxlength: 100 },
 	celular: { type: String, required: false, maxlength: 13 },
 	clave: { type: String, required: true, maxlength: 225, minlength: 5 },
-	token: { type: String, required: false }
+	token: { type: String, required: false}
 });
 
 UserSchema.static("login", async function (cedula, pwd) {
@@ -73,6 +73,22 @@ UserSchema.method("createPasswors", async function(){
 		this.clave = hash.digest("hex");
 		this.save();
 		return { clave: pwd, hash: this.clave};
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+});
+
+UserSchema.method("fillable", async function(){
+	try {
+		return { 
+			email: this.email,
+			cedula: this.cedula,
+			nombres: this.nombres,
+			apellidos: this.apellidos,
+			celular: this.celular,
+			username: this.nombres+' '+this.apellidos
+		};
 	} catch (error) {
 		console.log(error);
 		return false;
