@@ -55,16 +55,24 @@ const ViewHome = Backbone.View.extend(
 		},
 		editAction: function (e) {
 			e.preventDefault();
-			let _id = $(e.currentTarget).attr("data-id");
-			this.model.router.navigate("edita_venta/" + window.sessionStorage.getItem("cedula") + "/" + _id, { trigger: true });
-			this.remove();
+			if (window.confirm("Confirma que desea editar el registro") === false) {
+				return false;
+			} else {
+				let _id = $(e.currentTarget).attr("data-id");
+				this.model.router.navigate("edita_venta/" + window.sessionStorage.getItem("cedula") + "/" + _id, { trigger: true });
+				this.remove();
+			}
 		},
 		trashAction: function (e) {
 			e.preventDefault();
-			let _id = $(e.currentTarget).attr("data-id");
-			let entity = this.collection.get(_id);
-			ViewHome.rowsViews[entity.cid].remove();
-			this.collection.remove(_id);
+			if (window.confirm("Confirma que desea borrar el registro") === false) {
+				return false;
+			} else {
+				let _id = $(e.currentTarget).attr("data-id");
+				let entity = this.collection.get(_id);
+				ViewHome.rowsViews[entity.cid].remove();
+				this.collection.remove(_id);
+			}
 		},
 		createAction: function (e) {
 			e.preventDefault();
