@@ -26,14 +26,14 @@ module.exports = {
 		]
 	},
 	devServer: {
-		port: 3001
+		port: 81
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
 			inject: true,
 			template: "./src/index.html",
 			filename: "index.html",
-			port: 3001
+			port: 81
 		})
 	]
 };
