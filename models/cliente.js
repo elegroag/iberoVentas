@@ -22,4 +22,27 @@ const ClienteSchema = new Schema({
 	updated_at: { type: Date, default: Date.now }
 });
 
+ClienteSchema.static('seeders', async function(){
+	const clientes = [
+		{
+			cedula: 1110491952,
+			nombres: "Edwin Andres",
+			apellidos: 'Legro Agudelo'
+		},
+		{
+			cedula: 1110491953,
+			nombres: "Alan Felipe ",
+			apellidos:'Paez Herrera'
+		},
+		{
+			cedula: 1110491954,
+			nombres: "Ricardo Andres",
+			apellidos:'Velez Corredor'
+		}
+	];
+
+	const collection = await this.create(clientes);
+	return collection;
+});
+
 module.exports = mongoose.model("clientes", ClienteSchema);
