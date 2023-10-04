@@ -13,9 +13,10 @@ const es6 = require("express-es6-template-engine");
 
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
-const productsRouter = require("./routes/products");
+const productosRouter = require("./routes/productos");
 const pruebasRouter = require("./routes/pruebas");
 const ventasRouter = require("./routes/ventas");
+const categoriaRouter = require("./routes/categorias");
 
 const app = express();
 
@@ -46,6 +47,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", authRouter);
 app.use("/users", usersRouter);
 app.use("/ventas", ventasRouter);
+app.use("/categorias", categoriaRouter);
+app.use("/productos", productosRouter);
 
 /*	
 app.use("/products", productsRouter);

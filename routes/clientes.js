@@ -1,31 +1,20 @@
 var express = require("express");
 var router = express.Router();
+const Cliente = require("./cliente");
 
-const clientes = [
-	{
-		cid: "1",
-		cedula: "1110491951",
-		nombres: "Edwin Andres",
-		apellidos: "Legro Agudelo"
-	},
-	{
-		cid: "2",
-		cedula: "1110491952",
-		nombres: "Alan Felipe",
-		apellidos: "Paez Herrera"
-	},
-	{
-		cid: "3",
-		cedula: "1110491956",
-		nombres: "Ricardo Andres",
-		apellidos: "Velez Corredor"
-	}
-];
-
-router.get("/all", function (req, res, next) {
+router.get("/all", async function (req, res, next) {
+	const _clientes = await Cliente.find();
 	res.status(201).json({
 		success: true,
-		collection: clientes
+		collection: _clientes
+	});
+});
+
+router.get("/:cliente", async function (req, res, next) {
+	const entity = await Cliente.findById(req.params.cliente);
+	res.status(200).json({
+		success: true,
+		entity: entity
 	});
 });
 
