@@ -26,9 +26,12 @@ router.post("/crear", async function (req, res, next) {
 router.delete("/all", async function (req, res, next) {
 	let collectionCategorias = await Categoria.find();
 
-	await collectionCategorias.forEach(async (element) => {
-		await Categoria.deleteOne(element);
-	});
+	let ai = 0;
+	while (ai < collectionCategorias.length) {
+		let _categoria = collectionCategorias[ai];
+		await Categoria.deleteOne(_categoria);
+        ai++;
+    }
 
 	let collectionEmpty = await Categoria.find();
 	res.status(201).json({

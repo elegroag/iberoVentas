@@ -7,17 +7,16 @@ const VentaSeeder = require("../seeders/venta_seeder");
 const VentaDetalleSeeder = require("../seeders/venta_detalle_seeder");
 
 //middleware decodeUserToken
-router.get("/", async function (req, res, next) {
+router.get("/all", async function (req, res, next) {
 	let ventas = await Venta.find();
 	let ai = 0;
 	while (ai < ventas.length) {
 		let venta = ventas[ai];
-		const venta_detalles = await VentaDetalle.find().where('venta').equals(venta._id).populate('producto');
-		venta.venta_detalles = venta_detalles;
+		const detalles = await VentaDetalle.find().where('venta').equals(venta._id).populate('producto');
+		venta.detalles = detalles;
 		ventas[ai] = venta; 
         ai++;
-    }
-
+    } 
 	res.status(201).json({
 		success: true,
 		collection: ventas

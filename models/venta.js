@@ -14,12 +14,12 @@ const VentaSchema = new Schema({
 	fecha: { type: Date, default: Date.now },
 	valor: { type: Number },
 	detalles: [ 
-		{ type: Schema.Types.ObjectId, ref: "venta_detalles" }
+		{ type: Schema.Types.ObjectId, ref: "VentaDetalle" }
 	],
-	cliente: { type: Schema.Types.ObjectId, ref: "clientes" },
-	user: { type: Schema.Types.ObjectId, ref: "users" },
+	cliente: { type: Schema.Types.ObjectId, ref: "Cliente" },
+	user: { type: Schema.Types.ObjectId, ref: "User" },
 	created_at: { type: Date, default: Date.now },
 	updated_at: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("ventas", VentaSchema);
+module.exports = mongoose.model("Venta", VentaSchema);

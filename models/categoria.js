@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-require("./producto");
 
 const CategoriaSchema = new Schema({
 	serial: {
@@ -15,12 +14,11 @@ const CategoriaSchema = new Schema({
 	photo: { type: String, required: false, maxlength: 80 },
 	tipo: { type: String, required: true, maxlength: 1 },
 	estado: { type: String, required: true, maxlength: 1 },
-	productos: [{ type: Schema.Types.ObjectId, ref: "productos" }]
+	productos: [{ type: Schema.Types.ObjectId, ref: "Producto" }]
 });
-
 
 CategoriaSchema.static("tipoTupla", async function () {
 	return {'S':'SOLIDOS', 'B':'BEBIDAS'};
 });
 
-module.exports = mongoose.model("categorias", CategoriaSchema);
+module.exports = mongoose.model("Categoria", CategoriaSchema);

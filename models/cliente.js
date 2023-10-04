@@ -45,4 +45,4 @@ ClienteSchema.static('seeders', async function(){
 	return collection;
 });
 
-module.exports = mongoose.model("clientes", ClienteSchema);
+module.exports = mongoose.model("Cliente", ClienteSchema);

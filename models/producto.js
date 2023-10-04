@@ -13,8 +13,8 @@ const ProductoSchema = new Schema({
 	detalle: { type: String, required: true, maxlength: 80 },
 	stock: { type: Number, required: true, minlength: 0, maxlength: 12 },
 	photo: { type: String, required: false, maxlength: 80 },
-	categoria: { type: Schema.Types.ObjectId, ref: "categorias" },
+	categoria: { type: Schema.Types.ObjectId, ref: "Categoria" },
 	precio: { type: Number, required: true, minlength: 1, maxlength: 12 }
 });
 
-module.exports = mongoose.model("productos", ProductoSchema);
+module.exports = mongoose.model("Producto", ProductoSchema);

@@ -22,7 +22,9 @@ const UserSchema = new Schema({
 	email: { type: String, required: true, maxlength: 100 },
 	celular: { type: String, required: false, maxlength: 13 },
 	clave: { type: String, required: true, maxlength: 225, minlength: 5 },
-	token: { type: String, required: false}
+	token: { type: String, required: false},
+	created_at: { type: Date, default: Date.now },
+	updated_at: { type: Date, default: Date.now }
 });
 
 UserSchema.static("login", async function (cedula, pwd) {
@@ -95,4 +97,4 @@ UserSchema.method("fillable", async function(){
 	}
 });
 
-module.exports = mongoose.model("users", UserSchema);
+module.exports = mongoose.model("User", UserSchema);
