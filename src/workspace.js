@@ -103,7 +103,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 					let model = { router: Workspace.router };
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let view = new ViewHome({ el: "#contentApp", model: model, collection: ventas_collection });
 					Workspace.ViewActive = view.render().el;
@@ -156,7 +156,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };
@@ -185,7 +185,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };
@@ -362,6 +362,50 @@ var Workspace = Backbone.Router.extend(
 			input.parentNode.parentNode.querySelector(".num-value").textContent = sliderValue;
 			input.parentNode.querySelector(".thumb").style.left = `calc(${percentage}% - 12px)`;
 			input.parentNode.querySelector(".progress-bar").style.width = `calc(${percentage}% + 12px)`;
+		},
+		nestedTabSelect: (tabsElement='ul.tabs', currentElement='active') => {
+			const tabs = tabsElement ?? 'ul.tabs';
+			const currentClass = currentElement ?? 'active';
+			
+			document.querySelectorAll(tabs).forEach(function (tabContainer) {
+				let activeLink, activeContent;
+				const links = Array.from(tabContainer.querySelectorAll("a"));
+			
+				activeLink = links.find(function (link) {
+					return link.getAttribute("data-href") === location.hash;
+				}) || links[0];
+
+				activeLink.classList.add(currentClass);
+			
+				activeContent = document.querySelector(activeLink.getAttribute("data-href"));
+				activeContent.classList.add(currentClass);
+			
+				links.forEach(function (link) {
+					if (link !== activeLink) {
+						const content = document.querySelector(link.getAttribute("data-href"));
+						content.classList.remove(currentClass);
+					}
+				});
+			
+				tabContainer.addEventListener("click", function (e) {
+					//valida link
+					if (e.target.tagName === "A") {
+						// Make the old tab inactive.
+						activeLink.classList.remove(currentClass);
+						activeContent.classList.remove(currentClass);
+				
+						// Update the variables with the new link and content.
+						activeLink = e.target;
+						activeContent = document.querySelector(activeLink.getAttribute("data-href"));
+				
+						// Make the tab active.
+						activeLink.classList.add(currentClass);
+						activeContent.classList.add(currentClass);
+				
+						e.preventDefault();
+					}
+				});
+			});
 		}
 	}
 );

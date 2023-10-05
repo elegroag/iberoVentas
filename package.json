@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/server.js",
-    "dev": "nodemon ./bin/server.js",
+    "dev": "npm cache clean --force && nodemon ./bin/server.js",
     "api-dev": "webpack-dev-server --open --mode development",
     "api-build": "webpack --mode production && mv -f public/index.html views/"
   },
@@ -19,7 +19,7 @@
     "http-errors": "^2.0.0",
     "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.2",
+    "mongoose": "^7.5.3",
     "morgan": "~1.9.1",
     "serve-favicon": "^2.5.0",
     "underscore": "^1.13.6"

@@ -27,7 +27,7 @@ router.post("/login", async function (req, res, next) {
 	try {
 		const { body } = req;
 		const { cedula, clave } = body;
-		
+
 		const user = await User.login(cedula, clave);
 		if (user) {
 			const payload = {

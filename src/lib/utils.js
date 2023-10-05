@@ -1,7 +1,7 @@
 import _ from "underscore";
 
 const Utils = {
-	env: "production", // development || production
+	env: "development", // development || production
 	hostDev: "localhost",
 	hostPro: "3.148.102.49",
 	portDev: "3000",

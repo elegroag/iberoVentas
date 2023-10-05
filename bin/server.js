@@ -11,7 +11,7 @@ var config = require("./config");
 /**
  * Get port from environment and store in Express.
  */
-let port = config.port(process.env.PORT || "80");
+let port = config.port(process.env.PORT || "3000");
 app.set("port", port);
 
 /**
