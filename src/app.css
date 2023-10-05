@@ -6,12 +6,12 @@
 
 body {
   min-height: 100vh;
-  background-color: #101010;
+  background-color: #2f323b;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   font-family: Arial;
-  color: White;
+  color: #ffffff;
   font-size: min(15px, max(3.4vw, 17px));
   text-align: center;
   display: flex;
@@ -40,7 +40,7 @@ button {
   border: 0;
   outline: 0;
   font-size: 1em;
-  color: white;
+  color: #ffffff;
 }
 
 
@@ -81,7 +81,7 @@ button {
 }
 
 .writing :is(input, textarea):invalid~span {
-  background: #ff0000;
+  background: #f6a821;
 }
 
 .writing :is(input, textarea)~span:before {
@@ -89,7 +89,7 @@ button {
   display: block;
   height: 2px;
   width: 0%;
-  background: #03A9F4;
+  background: #f4a003;
   transition: width .5s ease;
 }
 
@@ -223,7 +223,7 @@ button {
 }
 
 :is(.date, .time) input:invalid~span {
-  background: #ff0000;
+  background: #f6a821;
 }
 
 :is(.date, .time) input~span:before {
@@ -742,29 +742,32 @@ button {
 .submit button {
   font-size: 1rem;
   padding: .4em 0.8em;
-  background: #3399ff;
-  border-radius: 5px;
+  border-radius: 3px 3px 0px 0px;
   cursor: pointer;
-}
-
-.submit input:active,
-.submit button:active {
-  background: #225588;
+  color: #ffffff;
+  background-color: rgba(246, 168, 33, 0.1);
+  border: 1px solid #f8bb52;
+  outline: 0;
+  box-shadow: none;
 }
 
 a {
-  color: #03A9F4;
   text-decoration: none;
   cursor: pointer;
-  display: block;
-  width: 100%;
   padding: 10px 8px;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #f8bb52;
+  outline: none;
+}
+
+a:hover {
+  color: #ffcb71;
+  text-shadow: 0 1px 0 #333;
 }
 
 p.help-error {
-  color: #d81e37;
+  color: #f54a61;
   font-size: 1rem;
   width: 100%;
   padding: 5px;
@@ -778,8 +781,8 @@ p.help-error {
   min-width: 800px;
   padding: 15px 20px;
   padding-top: 40px;
-  background-color: #f6e5da;
-  border-radius: 20px 10px;
+  background-color: rgba(68, 70, 79, 0.5);
+  border-radius: 2px;
 }
 
 h1 {
@@ -787,12 +790,12 @@ h1 {
 }
 
 .card h2 {
-  color: #864946;
+  color: #c27a76;
   font-weight: bold;
 }
 
 .card p {
-  color: #532e2c;
+  color: #c27a76;
   font-weight: 400;
   font-size: 1rem;
 }
@@ -812,7 +815,7 @@ h1 {
 .table {
   width: 100%;
   border: none;
-  color: #777;
+  color: #bbb4b4;
   font-size: 0.85rem
 }
 
@@ -832,29 +835,117 @@ h1 {
 .btn-md {
   font-size: 0.9rem;
   padding: 5px 9px;
-  border-radius: 3px;
+  border-radius: 1px;
   cursor: pointer;
   margin: 3px;
 }
 
 .btn-sm {
-  font-size: 0.70rem;
+  font-size: 0.7rem;
   padding: 3px 6px;
-  border-radius: 3px;
+  border-radius: 1px;
   cursor: pointer;
   margin: 2px;
 }
+
 .blue {
   background: #3399ff;
 }
 
-.red{
-  background: #ca2a2a ;
+.red {
+  background: #ca2a2a;
 }
 
-.orange{
-  background: #cc6119 ;
+.orange {
+  background: #cc6119;
 }
-.green{
-  background: #19cc31 ;
+
+.green {
+  background: #19cc31;
+}
+
+.list-group {
+  display: block;
+  padding: 8px 0px;
+}
+
+/* body {
+  background-image: linear-gradient(19deg, #ff8a00 0%, #7b4302 100%);
+  background-repeat: no-repeat;
+  font: 400 16px/1.5em "Open Sans", sans-serif;
+}
+ */
+.page-content {
+  max-width: 700px;
+  margin: 32px auto;
+  padding: 32px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+[data-tab-content] {
+  display: none;
+}
+
+.active[data-tab-content] {
+  display: block;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tab {
+  flex: 1;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 10px;
+  color: #cdcdcd;
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.tab.active {
+  color: #1babf9;
+  border-bottom: 2px solid #1babf9;
+}
+
+.tab-li {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.tab-li a {
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 10px 0;
+  color: #cdcdcd;
+  border-bottom: 2px solid #cdcdcd;
+  margin-bottom: 0.4rem;
+  width: 100%;
+  display: block;
+}
+
+.tab-li a.active {
+  color: #1babf9;
+  border-bottom: 2px solid #1babf9;
+}
+
+.tab-li a {
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 10px;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  display: block;
 }
