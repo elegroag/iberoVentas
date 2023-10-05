@@ -1,12 +1,9 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-const mongoose = require('mongoose');
-
-//User model
-const User = require('../models/user');
+const User = require("../models/user");
 
 /* GET users listing. */
-router.get('/', async function(req, res, next) {
+router.get("/", async function (req, res, next) {
 	const collectionUsers = await User.find();
 	res.json({
 		status: 200,
@@ -14,7 +11,7 @@ router.get('/', async function(req, res, next) {
 	});
 });
 
-router.get('/:cedula', async function(req, res, next) {
+router.get("/:cedula", async function (req, res, next) {
 	const entity = await User.findById(req.params.cedula);
 	res.json({
 		status: 200,
@@ -22,9 +19,9 @@ router.get('/:cedula', async function(req, res, next) {
 	});
 });
 
-router.post('/', async function(req, res, next){
+router.post("/", async function (req, res, next) {
 	const { cedula, nombres, apellidos, email, celular, clave } = req.body;
-	const user = new User({ cedula, nombres, apellidos, celular, email, clave});
+	const user = new User({ cedula, nombres, apellidos, celular, email, clave });
 	const entity = await user.save();
 
 	res.json({
@@ -33,39 +30,51 @@ router.post('/', async function(req, res, next){
 	});
 });
 
-router.put('/:cedula', async function(req, res, next){
+router.put("/:cedula", async function (req, res, next) {
 	const { cedula, nombres, apellidos, email, celular, clave } = req.body;
 	const data = {
-		cedula, nombres, apellidos, email, celular, clave
+		cedula,
+		nombres,
+		apellidos,
+		email,
+		celular,
+		clave
 	};
-	const out = await User.findByIdAndUpdate(req.params.cedula, data); 
+	const out = await User.findByIdAndUpdate(req.params.cedula, data);
 	res.json({
 		status: 201,
 		data: out
 	});
 });
 
-router.delete('/:cedula', async function(req, res, next){
-	const out = await User.findByIdAndRemove(req.params.cedula); 
+router.delete("/user/:cedula", async function (req, res, next) {
+	const out = await User.deleteOne({ cedula: req.params.cedula });
 	res.json({
 		status: 201,
 		data: out
 	});
 });
 
-router.delete('/all', async function(req, res, next){
-	const collection = await User.find();
-	let ai = 0;
-	while (ai < collection.length) {
-		let user = collection[ai];
-		await User.deleteOne(user);
-		ai++;
+router.delete("/all", async function (req, res, next) {
+	try {
+		const collection = await User.find();
+		let ai = 0;
+		while (ai < collection.length) {
+			let user = collection[ai];
+			await User.findByIdAndRemove(user.id);
+			ai++;
+		}
+		let collectionEmpty = await User.find();
+		res.json({
+			status: 201,
+			data: collectionEmpty
+		});
+	} catch (error) {
+		res.json({
+			status: 304,
+			message: error.message
+		});
 	}
-	let collectionEmpty = await User.find();
-	res.json({
-		status: 201,
-		data: collectionEmpty
-	});
 });
 
 module.exports = router;

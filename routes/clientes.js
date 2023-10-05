@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const Cliente = require("../models/cliente");
+const ClienteSeeder = require("../seeders/cliente_seeder");
 
 router.get("/", async function (req, res, next) {
 	const clientes = await Cliente.find();
@@ -13,12 +14,36 @@ router.get("/", async function (req, res, next) {
 router.post("/crear", async function (req, res, next) {
 	let collection = await Cliente.find();
 	if (collection.length == 0) {
-		collection = await Cliente.seeders();
+		collection = await ClienteSeeder.Seeder();
 	}
 	res.status(201).json({
 		success: true,
 		collection: collection
 	});
+});
+
+router.post("/create", async function (req, res, next) {
+	try {
+		const { cedula, nombres, apellidos } = req.body;
+
+		const entity = new Cliente({
+			cedula: cedula,
+			nombres: nombres,
+			apellidos: apellidos
+		});
+
+		await entity.save();
+
+		res.status(201).json({
+			success: true,
+			entity: entity
+		});
+	} catch (error) {
+		res.status(304).json({
+			success: false,
+			message: error.message
+		});
+	}
 });
 
 router.delete("/all", async function (req, res, next) {
@@ -42,6 +67,29 @@ router.get("/:cliente", async function (req, res, next) {
 		success: true,
 		entity: entity
 	});
+});
+
+router.put("/up/:id", async function (req, res, next) {
+	try {
+		const { cedula, nombres, apellidos } = req.body;
+		const _id = req.params.id;
+
+		const entity = await Cliente.findById(_id);
+		entity.cedula = cedula;
+		entity.nombres = nombres;
+		entity.apellidos = apellidos;
+		await entity.save();
+
+		res.status(201).json({
+			success: true,
+			entity: entity
+		});
+	} catch (error) {
+		res.status(304).json({
+			success: false,
+			message: error.message
+		});
+	}
 });
 
 module.exports = router;

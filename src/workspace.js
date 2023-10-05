@@ -103,7 +103,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 					let model = { router: Workspace.router };
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let view = new ViewHome({ el: "#contentApp", model: model, collection: ventas_collection });
 					Workspace.ViewActive = view.render().el;
@@ -156,7 +156,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };
@@ -185,7 +185,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmeCollection();
+					let ventas_collection = new _vfm.VentaFirmes();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };

@@ -12,9 +12,9 @@ const Auth = Backbone.Model.extend(
 			apellidos: void 0,
 			email: void 0,
 			clave: void 0,
-			celular: void 0,
+			celular: void 0
 		},
-		validate: (attrs, options) => {
+		validate: (/** @type {object} */ attrs, /** @type {any} */ options) => {
 			let errors = {};
 
 			if (attrs.cedula == "") {
@@ -36,7 +36,7 @@ const Auth = Backbone.Model.extend(
 		}
 	},
 	{
-		renderErrors: function (errors) {
+		renderErrors: function (/** @type {object} */ errors) {
 			_.each(errors, (msj, key) => {
 				$(`[data-alert="${key}"]`).html(msj);
 			});

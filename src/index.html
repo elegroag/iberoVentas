@@ -1,14 +1,15 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>API Cliente Ibero Ventas</title>
-		<link rel="stylesheet" href="app.css" />
-	</head>
 
-	<body>
-		<script type="text/template" id="tmp_login">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>API Cliente Ibero Ventas</title>
+	<link rel="stylesheet" href="app.css" />
+</head>
+
+<body>
+	<script type="text/template" id="tmp_login">
 			<h1>LOGIN</h1>
 			<form>
 				<div class="text writing">
@@ -34,9 +35,9 @@
 				<a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
 				</div>
 			</form>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_signup">
+	<script type="text/template" id="tmp_signup">
 			<h1>REGISTRAR</h1>
 			<form>
 
@@ -91,9 +92,9 @@
 				<a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
 				</div>
 			</form>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_change_pass">
+	<script type="text/template" id="tmp_change_pass">
 			<h1>CAMBIAR DE CLAVE</h1>
 			<form>
 				<div class="text writing">
@@ -126,9 +127,9 @@
 				<a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a>
 				</div>
 			</form>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_recovery_user">
+	<script type="text/template" id="tmp_recovery_user">
 			<h1>OLVIDO LA CLAVE</h1>
 			<form>
 				<div class="text writing">
@@ -154,9 +155,9 @@
 				<a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a>
 				</div>
 			</form>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_perfil">
+	<script type="text/template" id="tmp_perfil">
 			<div class='card'>
 				<div class='card-header'>
 					<a href='#' type='button' id='btnClose' style='position:absolute; right:0'>X</a><br/>
@@ -179,9 +180,9 @@
 
 				</div>
 			</div>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_home">
+	<script type="text/template" id="tmp_venta_table">
 			<div class='card'>
 				<a href='#' class='close' type='button' id='btnClose'><span>X</span></a><br/>
 				<div class='card-header'>
@@ -213,21 +214,21 @@
 					<br/>
 				</div>
 			</div>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_rows_venta_firmeza">
+	<script type="text/template" id="tmp_rows_venta_firmeza">
 			<td><%= fecha %></td>
-			<td><%= _.size(venta_detalle) %></td>
-			<td><%= cliente_name%></td>
+			<td><%= _.size(detalles) %></td>
+			<td><%= cliente.nombres + ' ' + cliente.apellidos %></td>
 			<td><%= valor%></td>
-			<td><%= _.size(venta_detalle) %></td>
-			<td><%= user_id%></td>
+			<td><%= _.size(detalles) %></td>
+			<td><%= user.nombres + ' ' + user.apellidos %></td>
 			<td><button type='button' data-toggle='showDetalle' data-id='<%=_id%>' class='btn-sm blue'>Detalles</button></td>
 			<td><button type='button' data-toggle='editDetalle' data-id='<%=_id%>' class='btn-sm orange'>Editar</button></td>
 			<td><button type='button' data-toggle='trashDetalle' data-id='<%=_id%>' class='btn-sm red'>Borrar</button></td>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_venta_create">
+	<script type="text/template" id="tmp_venta_create">
 			<div class='card-header'>
 				<h2>REGISTRAR VENTA</h2>
 				<br/>
@@ -314,9 +315,9 @@
 					</div>
 				</form>
 			</div>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_venta_edita">
+	<script type="text/template" id="tmp_venta_edita">
 			<div class='card-header'>
 				<h2>EDITA LA VENTA</h2>
 				<br/>
@@ -403,9 +404,9 @@
 					</div>
 				</form>
 			</div>
-		</script>
+	</script>
 
-		<script type="text/template" id="tmp_venta_show">
+	<script type="text/template" id="tmp_venta_show">
 			<div class='card'>
 				<div class='card-header'>
 					<h2>DETALLE VENTA</h2>
@@ -434,8 +435,9 @@
 					</div>
 				</div>
 			</div>
-		</script>
+	</script>
 
-		<div id="app"></div>
-	</body>
+	<div id="app"></div>
+</body>
+
 </html>

@@ -7,7 +7,7 @@ import ViewVentaFirmeza from "./venta_firmeza.view";
 const ViewHome = Backbone.View.extend(
 	{
 		render: function () {
-			let template = _.template(document.getElementById("tmp_home").innerHTML);
+			let template = _.template(document.getElementById("tmp_venta_table").innerHTML);
 			$(this.$el).html(
 				template({
 					cedula: window.sessionStorage.getItem("cedula"),

@@ -8,21 +8,21 @@ const VentaFirme = Backbone.Model.extend({
 	idAttribute: "_id",
 	defaults: {
 		_id: void 0,
-		cliente_id: void 0,
+		cliente: void 0,
 		estado: void 0,
 		fecha: void 0,
 		valor: void 0,
-		user_id: void 0,
+		user: void 0,
 		cliente_name: void 0,
-		venta_detalle: []
+		detalles: []
 	}
 });
 
-const VentaFirmeCollection = Backbone.Collection.extend({
+const VentaFirmes = Backbone.Collection.extend({
 	initialize: () => {
 		console.log("Collection", "venta realizadas");
 	},
 	model: VentaFirme
 });
 
-export default { VentaFirme: VentaFirme, VentaFirmeCollection: VentaFirmeCollection };
+export default { VentaFirme: VentaFirme, VentaFirmes: VentaFirmes };
