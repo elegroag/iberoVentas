@@ -25,11 +25,15 @@ var Workspace = Backbone.Router.extend(
 			changepass: "changepass",
 			recoveryuser: "recoveryUser",
 			"home/:cedula": "home",
-			"perfil/:cedula": "perfil", // #search/kiwis
+			"perfil/:cedula": "perfil",
 			"crear_venta/:cedula": "crearVenta",
 			"edita_venta/:cedula/:id": "editaVenta",
 			"show_venta/:cedula/:id": "showVenta",
-			"search/:query/p:page": "search" // #search/kiwis/p7
+			"search/:query/p:page": "search",
+			tabs: "tabsView",
+			"clientes/:cedula": "routeClientes",
+			"productos/:cedula": "routeProductos",
+			"categorias/:cedula": "routeCategorias"
 		},
 
 		login: () => {
@@ -95,19 +99,28 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			ViewHome.buscarListaVentas(token, (collection) => {
-				if (_.isNull(collection)) {
+			Workspace.contentTabs(cedula);
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
 					alert("La session ha finalizado");
 					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
-					Workspace.createContainer();
-					let model = { router: Workspace.router };
-					let ventas_collection = new _vfm.VentaFirmes();
-					ventas_collection.add(collection, { merge: true });
-					let view = new ViewHome({ el: "#contentApp", model: model, collection: ventas_collection });
-					Workspace.ViewActive = view.render().el;
-					Workspace.posRenderForm();
+					ViewHome.buscarListaVentas(token, (collection) => {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.createSubContainer("tab__home", "home");
+							let model = { router: Workspace.router };
+							let ventas_collection = new _vfm.VentaFirmes();
+							ventas_collection.add(collection, { merge: true });
+							let view = new ViewHome({ el: "#content_sub_home", model: model, collection: ventas_collection });
+							Workspace.ViewActive = view.render().el;
+							Workspace.posRenderForm();
+						}
+					});
 				}
 			});
 		},
@@ -195,17 +208,66 @@ var Workspace = Backbone.Router.extend(
 					Workspace.posRenderForm();
 				}
 			});
+		},
+		routeClientes: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.contentTabs(cedula, "#tab2");
+			Workspace.createSubContainer("tab__clientes", "clientes");
+		},
+		routeProductos: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.contentTabs(cedula, "#tab3");
+			Workspace.createSubContainer("tab__productos", "productos");
+		},
+		routeCategorias: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.contentTabs(cedula, "#tab4");
+			Workspace.createSubContainer("tab__categorias", "categorias");
 		}
 	},
 	{
 		router: void 0,
 		ViewActive: void 0,
 		createContainer: () => {
-			if (Workspace.ViewActive !== void 0) Workspace.ViewActive.remove();
+			if (Workspace.ViewActive !== void 0) {
+				Workspace.ViewActive.remove();
+				$("#contentApp").remove();
+			}
 			const el = document.createElement("div");
 			el.setAttribute("id", "contentApp");
 			el.setAttribute("class", "contentApp");
 			document.getElementById("app").appendChild(el);
+		},
+		createSubContainer: (element, tab) => {
+			const el = document.createElement("div");
+			el.setAttribute("id", "content_sub_" + tab);
+			el.setAttribute("class", "content_sub_" + tab);
+			document.getElementById(element).innerHTML = "";
+			document.getElementById(element).appendChild(el);
 		},
 		posRenderForm: () => {
 			document.querySelectorAll(".writing :is(input, textarea)").forEach((writinginput) => {
@@ -363,48 +425,68 @@ var Workspace = Backbone.Router.extend(
 			input.parentNode.querySelector(".thumb").style.left = `calc(${percentage}% - 12px)`;
 			input.parentNode.querySelector(".progress-bar").style.width = `calc(${percentage}% + 12px)`;
 		},
-		nestedTabSelect: (tabsElement='ul.tabs', currentElement='active') => {
-			const tabs = tabsElement ?? 'ul.tabs';
-			const currentClass = currentElement ?? 'active';
-			
+		nestedTabSelect: (tabsElement, currentElement, active = void 0) => {
+			const tabs = tabsElement ?? "ul.tabs";
+			const currentClass = currentElement ?? "active";
+
 			document.querySelectorAll(tabs).forEach(function (tabContainer) {
 				let activeLink, activeContent;
-				const links = Array.from(tabContainer.querySelectorAll("a"));
-			
-				activeLink = links.find(function (link) {
-					return link.getAttribute("data-href") === location.hash;
-				}) || links[0];
+				const links = Array.from(tabContainer.querySelectorAll("a[toggle-event='tab']"));
 
-				activeLink.classList.add(currentClass);
-			
-				activeContent = document.querySelector(activeLink.getAttribute("data-href"));
-				activeContent.classList.add(currentClass);
-			
+				activeLink =
+					links.find(function (link) {
+						return link.getAttribute("data-href") === active;
+					}) || links[0];
+
+				$(activeLink).addClass(currentClass);
+
+				activeContent = $($(activeLink).attr("data-href"));
+				activeContent.addClass(currentClass);
+
 				links.forEach(function (link) {
 					if (link !== activeLink) {
-						const content = document.querySelector(link.getAttribute("data-href"));
-						content.classList.remove(currentClass);
+						$(link).removeClass(currentClass);
 					}
 				});
-			
-				tabContainer.addEventListener("click", function (e) {
+
+				$(tabContainer).on("click", (e) => {
 					//valida link
+					e.preventDefault();
 					if (e.target.tagName === "A") {
 						// Make the old tab inactive.
-						activeLink.classList.remove(currentClass);
-						activeContent.classList.remove(currentClass);
-				
+						$(activeLink).removeClass(currentClass);
+						$(activeContent).removeClass(currentClass);
+
 						// Update the variables with the new link and content.
-						activeLink = e.target;
-						activeContent = document.querySelector(activeLink.getAttribute("data-href"));
-				
+						activeLink = $(e.currentTarget);
+						activeContent = $(activeLink.attr("data-href"));
+
 						// Make the tab active.
-						activeLink.classList.add(currentClass);
-						activeContent.classList.add(currentClass);
-				
+						activeLink.addClass(currentClass);
+						activeContent.addClass(currentClass);
+
 						e.preventDefault();
 					}
 				});
+			});
+		},
+		contentTabs: (cedula, tabActive) => {
+			let template = _.template(document.getElementById("tmp_tabs_content").innerHTML);
+			$("#contentApp").remove();
+			Workspace.createContainer();
+			const tabs = [
+				{ current: "tab1", name: "home", label: "Ventas" },
+				{ current: "tab2", name: "clientes", label: "Clientes" },
+				{ current: "tab3", name: "productos", label: "Productos" },
+				{ current: "tab4", name: "categorias", label: "Categorias" }
+			];
+			$("#contentApp").html(template({ tabs: tabs }));
+			Workspace.nestedTabSelect("ul.tabs", "active", tabActive);
+
+			$("#contentApp").on("click", "a[toggle-event='tab']", (e) => {
+				e.preventDefault();
+				const route = $(e.currentTarget).attr("data-name");
+				Workspace.router.navigate(route + "/" + cedula, { trigger: true });
 			});
 		}
 	}
