@@ -952,3 +952,10 @@ h1 {
   -ms-user-select: none;
   display: block;
 }
+
+.tab-li a.disabled {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: default;
+  pointer-events: none;
+}

@@ -13,6 +13,7 @@ import Utils from "./lib/utils";
 import ViewVentaCreate from "./components/dash/venta_create.view";
 import ViewVentaShow from "./components/dash/venta_show.view";
 import ViewVentaEdita from "./components/dash/venta_edita.view";
+import NesteTab from "./lib/nestedTab";
 
 var Workspace = Backbone.Router.extend(
 	{
@@ -35,7 +36,6 @@ var Workspace = Backbone.Router.extend(
 			"productos/:cedula": "routeProductos",
 			"categorias/:cedula": "routeCategorias"
 		},
-
 		login: () => {
 			Workspace.createContainer();
 			let model = { router: Workspace.router };
@@ -425,63 +425,18 @@ var Workspace = Backbone.Router.extend(
 			input.parentNode.querySelector(".thumb").style.left = `calc(${percentage}% - 12px)`;
 			input.parentNode.querySelector(".progress-bar").style.width = `calc(${percentage}% + 12px)`;
 		},
-		nestedTabSelect: (tabsElement, currentElement, active = void 0) => {
-			const tabs = tabsElement ?? "ul.tabs";
-			const currentClass = currentElement ?? "active";
-
-			document.querySelectorAll(tabs).forEach(function (tabContainer) {
-				let activeLink, activeContent;
-				const links = Array.from(tabContainer.querySelectorAll("a[toggle-event='tab']"));
-
-				activeLink =
-					links.find(function (link) {
-						return link.getAttribute("data-href") === active;
-					}) || links[0];
-
-				$(activeLink).addClass(currentClass);
-
-				activeContent = $($(activeLink).attr("data-href"));
-				activeContent.addClass(currentClass);
-
-				links.forEach(function (link) {
-					if (link !== activeLink) {
-						$(link).removeClass(currentClass);
-					}
-				});
-
-				$(tabContainer).on("click", (e) => {
-					//valida link
-					e.preventDefault();
-					if (e.target.tagName === "A") {
-						// Make the old tab inactive.
-						$(activeLink).removeClass(currentClass);
-						$(activeContent).removeClass(currentClass);
-
-						// Update the variables with the new link and content.
-						activeLink = $(e.currentTarget);
-						activeContent = $(activeLink.attr("data-href"));
-
-						// Make the tab active.
-						activeLink.addClass(currentClass);
-						activeContent.addClass(currentClass);
-
-						e.preventDefault();
-					}
-				});
-			});
-		},
 		contentTabs: (cedula, tabActive) => {
 			let template = _.template(document.getElementById("tmp_tabs_content").innerHTML);
 			$("#contentApp").remove();
 			Workspace.createContainer();
 			const tabs = [
-				{ current: "tab1", name: "home", label: "Ventas" },
-				{ current: "tab2", name: "clientes", label: "Clientes" },
-				{ current: "tab3", name: "productos", label: "Productos" },
-				{ current: "tab4", name: "categorias", label: "Categorias" }
+				{ disabled: false, current: "tab1", name: "home", label: "Ventas" },
+				{ disabled: false, current: "tab2", name: "clientes", label: "Clientes" },
+				{ disabled: false, current: "tab3", name: "productos", label: "Productos" },
+				{ disabled: false, current: "tab4", name: "categorias", label: "Categorias" }
 			];
-			$("#contentApp").html(template({ tabs: tabs }));
-			Workspace.nestedTabSelect("ul.tabs", "active", tabActive);
+			$("#contentApp").html(template({ title: null, tabs: tabs }));
+			NesteTab("ul.tabs", "active", tabActive);
 
 			$("#contentApp").on("click", "a[toggle-event='tab']", (e) => {
 				e.preventDefault();
