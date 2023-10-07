@@ -72,7 +72,7 @@ router.delete("/all", async function (req, res, next) {
 	} catch (error) {
 		res.json({
 			status: 304,
-			message: error.message
+			message: error
 		});
 	}
 });

@@ -8,6 +8,7 @@ const VentaDetalle = require("../models/venta_detalle");
 const VentaSeeder = require("../seeders/venta_seeder");
 const VentaDetalleSeeder = require("../seeders/venta_detalle_seeder");
 const { mongoose } = require("mongoose");
+const cliente = require("../models/cliente");
 
 //middleware decodeUserToken
 router.get("/all", async function (req, res, next) {
@@ -75,7 +76,62 @@ router.post("/create", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
+		});
+	}
+});
+
+router.post("/api_create", async function (req, res, next) {
+	try {
+		const { estado, fecha, valor, user, cliente_nombre, cliente_apellido, cliente_cedula, detalles } = req.body;
+		const last = await Venta.find().sort({ serial: -1 }).limit(1);
+		const userEntity = await User.findOne().where("cedula").equals(user);
+		let clienteEntity = await Cliente.findOne().where("cedula").equals(cliente_cedula);
+
+		if (clienteEntity == null) {
+			clienteEntity = new Cliente({
+				_id: new mongoose.Types.ObjectId(),
+				cedula: cliente_cedula,
+				nombres: cliente_nombre,
+				apellidos: cliente_apellido
+			});
+			await clienteEntity.save();
+		}
+
+		const entity = new Venta({
+			_id: new mongoose.Types.ObjectId(),
+			serial: last[0].serial + 1,
+			estado: estado,
+			fecha: fecha,
+			valor: valor,
+			user: userEntity._id,
+			cliente: clienteEntity._id
+		});
+
+		await entity.save();
+
+		let collection = [];
+		for (const ventaDetalle in detalles) {
+			const entityDetalle = new VentaDetalle({
+				venta: entity._id,
+				producto: ventaDetalle.producto,
+				cantidad: ventaDetalle.cantidad,
+				subtotal: ventaDetalle.valor
+			});
+			await entityDetalle.save();
+			collection.push(entityDetalle);
+		}
+
+		entity.detalles = collection;
+		res.status(201).json({
+			success: true,
+			entity: entity
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(304).json({
+			success: false,
+			message: error
 		});
 	}
 });
@@ -126,7 +182,7 @@ router.put("/up/:id", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });

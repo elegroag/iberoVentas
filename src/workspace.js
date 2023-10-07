@@ -14,6 +14,7 @@ import ViewVentaCreate from "./components/dash/venta_create.view";
 import ViewVentaShow from "./components/dash/venta_show.view";
 import ViewVentaEdita from "./components/dash/venta_edita.view";
 import NesteTab from "./lib/nestedTab";
+import eventosDom from "./lib/eventosDom";
 
 var Workspace = Backbone.Router.extend(
 	{
@@ -42,6 +43,7 @@ var Workspace = Backbone.Router.extend(
 			let views = new ViewLogin({ el: "#contentApp", model: model });
 			Workspace.ViewActive = views.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		signup: () => {
 			Workspace.createContainer();
@@ -49,6 +51,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewSignup({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		changepass: () => {
 			Workspace.createContainer();
@@ -56,6 +59,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewChangepass({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		recoveryUser: () => {
 			Workspace.createContainer();
@@ -63,6 +67,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewRecoveryUser({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		perfil: (cedula) => {
 			if (_.isNull(cedula) || _.isUndefined(cedula)) {
@@ -119,6 +124,7 @@ var Workspace = Backbone.Router.extend(
 							let view = new ViewHome({ el: "#content_sub_home", model: model, collection: ventas_collection });
 							Workspace.ViewActive = view.render().el;
 							Workspace.posRenderForm();
+							eventosDom();
 						}
 					});
 				}
@@ -270,24 +276,6 @@ var Workspace = Backbone.Router.extend(
 			document.getElementById(element).appendChild(el);
 		},
 		posRenderForm: () => {
-			document.querySelectorAll(".writing :is(input, textarea)").forEach((writinginput) => {
-				writinginput.addEventListener("input", () => {
-					if (writinginput.value.trim() !== "") {
-						writinginput.classList.add("has-text");
-					} else {
-						writinginput.classList.remove("has-text");
-					}
-				});
-			});
-
-			document.querySelectorAll(".textarea textarea").forEach((textarea) => {
-				textarea.addEventListener("input", () => {
-					textarea.style.height = "1em";
-					const scrollHeight = textarea.scrollHeight;
-					textarea.style.height = `${scrollHeight}px`;
-				});
-			});
-
 			$("[data-toggle='decrement']").on("click", function (e) {
 				e.preventDefault();
 				let el = document.querySelector("[data-toggle='decrement']");
@@ -298,30 +286,6 @@ var Workspace = Backbone.Router.extend(
 				e.preventDefault();
 				let el = document.querySelector("[data-toggle='increment']");
 				Workspace.incrementValue(el);
-			});
-
-			$("[data-toggle='toggle_seleccion1']").on("click", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion1']");
-				Workspace.toggleSeleccion(el);
-			});
-
-			$("[data-toggle='toggle_seleccion2']").on("click", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion2']");
-				Workspace.toggleSeleccion(el);
-			});
-
-			$("[data-toggle='toggle_seleccion2']").on("onmousedown", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion2']");
-				Workspace.capturarEstado(el);
-			});
-
-			$("[data-toggle='toggle_seleccion1']").on("onmousedown", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion1']");
-				Workspace.capturarEstado(el);
 			});
 		},
 		validaAuthToken: async (token, callback = void 0) => {
@@ -373,20 +337,6 @@ var Workspace = Backbone.Router.extend(
 				input.value = parseInt(input.value) - 1;
 			}
 		},
-		toggleSeleccion: (label) => {
-			var radioButton = label.querySelector('input[type="radio"]');
-			var estadoAnterior = radioButton.getAttribute("data-anterior");
-			if (estadoAnterior === "true") {
-				radioButton.checked = false;
-			} else {
-				radioButton.checked = true;
-			}
-		},
-		capturarEstado: (label) => {
-			var radioButton = label.querySelector('input[type="radio"]');
-			var estadoAnterior = radioButton.checked;
-			radioButton.setAttribute("data-anterior", estadoAnterior);
-		},
 		mostrarNombreArchivo: (input) => {
 			let fileName = input.files[0].name;
 			let archivoTexto = input.parentNode.querySelector(".text");
@@ -396,14 +346,15 @@ var Workspace = Backbone.Router.extend(
 		},
 		seleccionarArchivo: () => {
 			let archivoInput = document.querySelector("#archivo");
-			if (archivoInput.value) {
-				archivoInput.value = null;
+			let value = $(archivoInput).val();
+			if (value) {
+				$(archivoInput).val(null);
 				let archivoTexto = archivoInput.parentNode.querySelector(".text");
-				archivoTexto.innerText = "Añadir archivo";
+				$(archivoTexto).text("Añadir archivo");
 				let viewElement = archivoInput.parentNode.querySelector(".view");
 				viewElement.classList.remove("file-select");
 			} else {
-				archivoInput.click();
+				$(archivoInput).trigger("click");
 			}
 		},
 		applyOpenStyle: (selectElement) => {

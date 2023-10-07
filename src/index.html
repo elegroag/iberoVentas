@@ -29,9 +29,9 @@
 				<br/>
 				<button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
 				<br/> <br/>
-				<div class='list-group'><a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
 				</div>
 			</form>
 		</script>
@@ -86,9 +86,9 @@
 				<br/>
 				<button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
 				<br/> <br/>
-				<div class='list-group'><a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
 				</div>
 			</form>
 		</script>
@@ -121,9 +121,9 @@
 				<br/>
 				<button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
 				<br/> <br/>
-				<div class='list-group'><a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
+				<div class='list-group'><a href='#' class='link' type="button" name='btnRecuperar' id='btnRecuperar'>Olvido la clave, la puedes recuperar aquí</a></div>
 				</div>
 			</form>
 		</script>
@@ -149,9 +149,9 @@
 				<br/>
 				<button type="button" name='btnEnviar' id='btnEnviar'>Enviar</button>
 				<br/> <br/>
-				<div class='list-group'><a href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
-				<div class='list-group'><a href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnLogin' id='btnLogin'>Login de usuario</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnRegistrar' id='btnRegistrar'>Registrar usuario</a></div>
+				<div class='list-group'><a class='link' href='#' type="button" name='btnCambioClave' id='btnCambioClave'>Cambiar su clave aquí</a></div>
 				</div>
 			</form>
 		</script>
@@ -174,7 +174,7 @@
 					<div class='form-group'>
 						<label>Identificación: <%=cedula%></label>
 					</div>
-					<a href='#' type='button' id='btnWorker'>Vamos a trabajar<br/><br/>
+					<a href='#' class='link' type='button' id='btnWorker'>Vamos a trabajar<br/><br/>
 						<img src="coffee.jpg" alt="coffee" width="250px" style='border-radius:10%'>
 					</a>
 
@@ -209,7 +209,7 @@
 						<tbody id='showRowsTable'></tbody>
 					</table>
 					<br/>
-					<a href='#' type='button' id='btnPerfil'><span>Ver Perfil</span></a>
+					<a class='link' href='#' type='button' id='btnPerfil'><span>Ver Perfil</span></a>
 					<button type='button' id='btnPlus' class='btn-md green'>Crear Ventas +</button>
 					<br/>
 				</div>
@@ -229,92 +229,87 @@
 		</script>
 
 		<script type="text/template" id="tmp_venta_create">
-			<div class='card-header'>
-				<br>
-				<h3>Procesar Pedido</h3>
-				<br/>
-				<div class="card-img">
-					<img src="<%=avatar%>" width='80px' alt="avatar">
+			<div class='card' style="width:400px">
+				<div class='card-body'>
+					<form method='POST' action='#' id='ventaForm'>
+						<input type='text' style='display:none' id="user" name="user" value='<%=cedula%>'/>
+
+						<div class="text date">
+							<input type="date" id="fecha" name="fecha" required value='<%= venta.fecha%>' class='has-text'/>
+							<label for="fecha">Fecha*</label>
+							<span></span>
+							<p class='help-error' data-alert='fecha'></p>
+						</div>
+
+						<div class="text writing">
+							<input type="text" id="cliente_cedula" name="cliente_cedula" required/>
+							<label for="nombre">Cedula cliente</label>
+							<span></span>
+							<p class='help-error' data-alert='cliente_cedula'></p>
+						</div>
+
+						<div class="text writing">
+							<input type="text" id="cliente_nombre" name="cliente_nombre" required/>
+							<label for="nombre">Nombres cliente</label>
+							<span></span>
+							<p class='help-error' data-alert='cliente_nombre'></p>
+						</div>
+
+						<div class="text writing">
+							<input type="text" id="cliente_apellido" name="cliente_apellido" required/>
+							<label for="nombre">Apellidos cliente</label>
+							<span></span>
+							<p class='help-error' data-alert='cliente_apellido'></p>
+						</div>
+						<%
+						total = 0
+						_.each(detalles, function(row, ai){
+							total+= parseInt(row.valor) * parseInt(row.cantidad)
+						}) %>
+						<div class="text writing">
+							<input type="number" id="valor" name="valor" required value='<%= total%>' class='has-text'>
+							<label for="nombre">Valor*</label>
+							<span></span>
+							<p class='help-error' data-alert='valor'></p>
+						</div>
+
+						<div class="select">
+							<label class="titulo">Detalles</label>
+							<div class="view">
+								<ul class='list-group'>
+									<% _.each(detalles, function(row, ai){ %>
+										<li class='list-item'>
+											<img src='img/<%= row.photo%>' />
+											<label><%= row.nombre%></label><br/>
+											<div class='p-2'>
+												<label>Valor unidad: $ <span><%= row.valor%></span></label>
+												<label>Unidades</label>
+												<input type="number" id="numero" name="numero" min="1" max="9999999" value='1'>
+											</div>
+										</li>
+									<% }) %>
+								</ul>
+							</div>
+						</div>
+						<div class="radio">
+							<label data-toggle='toggle_seleccion1'" for="opcion1">
+								<input type="radio" name="opcion" value="C" id="opcio1">
+								<div class="view"></div> Cancelado
+							</label>
+							<label data-toggle='toggle_seleccion2'">
+								<input type="radio" name="opcion" value="P">
+								<div class="view"></div> Pendiente
+							</label>
+						</div>
+
+						<div class="submit">
+							<br/>
+							<button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
+							<br/> <br/>
+							<a class='link' href='#' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
+						</div>
+					</form>
 				</div>
-			</div>
-			<div class='card-body'>
-				<form>
-					<input type='text' style='display:none' id="user_id" name="user_id" value='<%=cedula%>'/>
-					<div class="text writing">
-						<input type="text" id="cliente_cedula" name="cliente_cedula" required/>
-						<label for="nombre">Cedula cliente</label>
-						<span></span>
-						<p class='help-error' data-alert='cliente_cedula'></p>
-					</div>
-					<div class="text writing">
-						<input type="text" id="cliente_nombre" name="cliente_nombre" required/>
-						<label for="nombre">Nombre cliente</label>
-						<span></span>
-						<p class='help-error' data-alert='cliente_nombre'></p>
-					</div>
-
-					<div class="text date">
-						<input type="date" id="fecha" name="fecha" required>
-						<label for="fecha">Fecha*</label>
-						<span></span>
-						<p class='help-error' data-alert='fecha'></p>
-					</div>
-
-					<div class="text writing">
-						<input type="text" id="valor" name="valor" required>
-						<label for="nombre">Valor*</label>
-						<span></span>
-						<p class='help-error' data-alert='valor'></p>
-					</div>
-
-					<div class="select">
-						<label class="titulo">Productos</label>
-						<div class="view" style='width:100%'>
-							<select id="ciudad" name="ciudad" multiple style='width:100%'>
-							<option value="1">Cafe con leche</option>
-							<option value="2">Pan Sandwich</option>
-							<option value="3">Cafe Capuchino De la Casa</option>
-							<option value="4">Waffles De Avena</option>
-							<option value="5">Tamal De la Casa</option>
-							<option value="6">Gaseosa Cola Cola 350</option>
-							<option value="7">Gaseosa Manzana Postobon 350</option>
-							</select>
-						</div>
-						</div>
-
-					<div class="number">
-						<label class="titulo">Unidades</label>
-						<div class="numero">
-							<label for="numero" class="decrement" data-toggle='decrement'"><svg viewBox="0 0 448 512" fill="white">
-								<path
-								d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-							</svg></label>
-							<input type="number" id="numero" name="numero" min="1" max="9999999" value='1'>
-							<label for="numero" class="increment" data-toggle='increment'><svg viewBox="0 0 448 512" fill="white">
-								<path
-								d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-							</svg></label>
-						</div>
-					</div>
-
-					<div class="radio">
-						<label data-toggle='toggle_seleccion1'" for="opcion1">
-							<input type="radio" name="opcion" value="C" id="opcio1">
-							<div class="view"></div> Cancelado
-						</label>
-						<label data-toggle='toggle_seleccion2'">
-							<input type="radio" name="opcion" value="P">
-							<div class="view"></div> Pendiente
-						</label>
-					</div>
-
-					<div class="submit">
-						<br/>
-						<button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
-						<br/> <br/>
-						<a href='#' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
-					</div>
-				</form>
 			</div>
 		</script>
 
@@ -401,7 +396,7 @@
 						<br/>
 						<button type="button" class='active' name='btnEnviar' id='btnEnviar'>Enviar</button>
 						<br/> <br/>
-						<a href='#' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
+						<a href='#' class='link' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
 					</div>
 				</form>
 			</div>
@@ -432,7 +427,7 @@
 					<div class="submit">
 
 						<br/> <br/>
-						<a href='#' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
+						<a href='#' class='link' type="button" name='btnRegresar' id='btnRegresar'>Regresar</a>
 					</div>
 				</div>
 			</div>
@@ -457,6 +452,46 @@
 					<div class="tab__content" id="tab__<%= tab.name%>">Procesando render view...</div>
 				</section>
 				<% }) %>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmp_lista_productos">
+			<div>
+				<ul class='list-group'>
+					<% if(categoria._id != void 0){%>
+					<li class='list-item'>
+						<div class='card'>
+							<div class='cartd-body' id='show_categoria'>
+								<label class='p-2'><%= categoria.detalle%></label><br/>
+								<img class='p-2' src='img/<%= categoria.photo%>' />
+							</div>
+							<div class='card-header'>
+								<a class='link' type='button' toggle-event='clean'>Limpiar</a>
+							</div>
+						</div>
+					</li>
+					<% }
+					_.each(productos, function(row, ai){ %>
+						<li class='list-item'>
+							<a type='button' data-id='<%= row._id%>' toggle-event='producto'>
+								<img src='img/<%= row.photo%>' />
+								<label><%= row.detalle%></label><br/>
+								<p class='p-2'><span>Precio: $ <%= row.precio%></span>
+								<span>Disponibles: <%= row.stock%></span></p>
+							</a>
+						</li>
+					<% }) %>
+				</ul>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmp_lista_categorias">
+			<div class='col-3'>
+				<a type='button' data-id='<%= _id%>' toggle-event='selected'>
+					<div class='p-2'><%= detalle%></div>
+					<img src='img/<%= photo%>' /><br/>
+					<%= (estado=='A')? 'Disponible':'Agotado' %>
+				</a>
 			</div>
 		</script>
 

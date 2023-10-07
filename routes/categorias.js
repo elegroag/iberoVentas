@@ -44,7 +44,7 @@ router.post("/create", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });
@@ -68,7 +68,7 @@ router.put("/up/:id", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });
