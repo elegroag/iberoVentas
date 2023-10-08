@@ -1,12 +1,10 @@
 var express = require("express");
 var router = express.Router();
-const mongoose = require("mongoose");
 const Producto = require("../models/producto");
-const Categoria = require("../models/categoria");
 const ProductoSeeder = require("../seeders/producto_seeder");
-const { last } = require("underscore");
+const { decodeUserToken } = require("../bin/passport-auth");
 
-router.get("/", async function (req, res, next) {
+router.get("/", decodeUserToken, async function (req, res, next) {
 	let collection = await Producto.find();
 	res.status(201).json({
 		success: true,
@@ -25,7 +23,7 @@ router.post("/crear", async function (req, res, next) {
 	});
 });
 
-router.post("/create", async function (req, res, next) {
+router.post("/create", decodeUserToken, async function (req, res, next) {
 	try {
 		const { detalle, stock, photo, categoria, precio } = req.body;
 		const last = await Producto.find().sort({ serial: -1 }).limit(1);
@@ -48,12 +46,12 @@ router.post("/create", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });
 
-router.put("/up/:id", async function (req, res, next) {
+router.put("/up/:id", decodeUserToken, async function (req, res, next) {
 	try {
 		const { detalle, stock, photo, categoria, precio } = req.body;
 		const _id = req.params.id;
@@ -73,7 +71,7 @@ router.put("/up/:id", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });

@@ -7,12 +7,20 @@ import ViewSignup from "./components/auth/signup.view";
 import ViewChangepass from "./components/auth/changepass.view";
 import ViewRecoveryUser from "./components/auth/recovery_user.view";
 import ViewHome from "./components/dash/home.view";
+import ViewCliente from "./components/clientes/clientes.view";
+import ViewProducto from "./components/productos/productos.view";
 import ViewPerfil from "./components/dash/perfil.view";
-import _vfm from "./models/venta_firmeza.model";
+import _venta from "./models/venta.model";
+import _cliente from "./models/cliente.model";
+import _categoria from "./models/categoria.model";
+import _producto from "./models/producto.model";
 import Utils from "./lib/utils";
 import ViewVentaCreate from "./components/dash/venta_create.view";
 import ViewVentaShow from "./components/dash/venta_show.view";
 import ViewVentaEdita from "./components/dash/venta_edita.view";
+import NesteTab from "./lib/nestedTab";
+import eventosDom from "./lib/eventosDom";
+import ViewCategoria from "./components/categorias/categorias.view";
 
 var Workspace = Backbone.Router.extend(
 	{
@@ -25,19 +33,23 @@ var Workspace = Backbone.Router.extend(
 			changepass: "changepass",
 			recoveryuser: "recoveryUser",
 			"home/:cedula": "home",
-			"perfil/:cedula": "perfil", // #search/kiwis
+			"perfil/:cedula": "perfil",
 			"crear_venta/:cedula": "crearVenta",
 			"edita_venta/:cedula/:id": "editaVenta",
 			"show_venta/:cedula/:id": "showVenta",
-			"search/:query/p:page": "search" // #search/kiwis/p7
+			"search/:query/p:page": "search",
+			tabs: "tabsView",
+			"clientes/:cedula": "routeClientes",
+			"productos/:cedula": "routeProductos",
+			"categorias/:cedula": "routeCategorias"
 		},
-
 		login: () => {
 			Workspace.createContainer();
 			let model = { router: Workspace.router };
 			let views = new ViewLogin({ el: "#contentApp", model: model });
 			Workspace.ViewActive = views.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		signup: () => {
 			Workspace.createContainer();
@@ -45,6 +57,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewSignup({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		changepass: () => {
 			Workspace.createContainer();
@@ -52,6 +65,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewChangepass({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		recoveryUser: () => {
 			Workspace.createContainer();
@@ -59,6 +73,7 @@ var Workspace = Backbone.Router.extend(
 			let view = new ViewRecoveryUser({ el: "#contentApp", model: model });
 			Workspace.ViewActive = view.render().el;
 			Workspace.posRenderForm();
+			eventosDom();
 		},
 		perfil: (cedula) => {
 			if (_.isNull(cedula) || _.isUndefined(cedula)) {
@@ -95,19 +110,29 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			ViewHome.buscarListaVentas(token, (collection) => {
-				if (_.isNull(collection)) {
+			Workspace.contentTabs(cedula);
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
 					alert("La session ha finalizado");
 					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
-					Workspace.createContainer();
-					let model = { router: Workspace.router };
-					let ventas_collection = new _vfm.VentaFirmes();
-					ventas_collection.add(collection, { merge: true });
-					let view = new ViewHome({ el: "#contentApp", model: model, collection: ventas_collection });
-					Workspace.ViewActive = view.render().el;
-					Workspace.posRenderForm();
+					ViewHome.buscarListaVentas(token, (collection) => {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.createSubContainer("tab__home", "home");
+							let model = { router: Workspace.router };
+							let ventas_collection = new _venta.Ventas();
+							ventas_collection.add(collection, { merge: true });
+							let view = new ViewHome({ el: "#content_sub_home", model: model, collection: ventas_collection });
+							Workspace.ViewActive = view.render().el;
+							Workspace.posRenderForm();
+							eventosDom();
+						}
+					});
 				}
 			});
 		},
@@ -148,22 +173,23 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			ViewHome.buscarListaVentas(token, (collection) => {
+			ViewHome.buscarListaVentas(token, function (collection) {
 				if (_.isNull(collection)) {
 					alert("La session ha finalizado");
 					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
 					Workspace.createContainer();
+					let ventasCollection = new _venta.Ventas();
+					ventasCollection.add(collection);
 
-					let ventas_collection = new _vfm.VentaFirmes();
-					ventas_collection.add(collection, { merge: true });
-					let entity = ventas_collection.get(id);
+					let entity = ventasCollection.get(id);
+					console.log(ventasCollection.toJSON());
+
 					let model = { router: Workspace.router, entity: entity };
 
 					let view = new ViewVentaEdita({ el: "#contentApp", model: model });
 					Workspace.ViewActive = view.render().el;
-					Workspace.posRenderForm();
 				}
 			});
 		},
@@ -185,7 +211,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmes();
+					let ventas_collection = new _venta.Ventas();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };
@@ -195,37 +221,135 @@ var Workspace = Backbone.Router.extend(
 					Workspace.posRenderForm();
 				}
 			});
+		},
+		routeClientes: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewCliente.loadClientes(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab2");
+							Workspace.createSubContainer("tab__clientes", "clientes");
+
+							let model = { router: Workspace.router };
+							let clientes_collection = new _cliente.Clientes();
+							clientes_collection.add(collection);
+							let view = new ViewCliente({ el: "#content_sub_clientes", model: model, collection: clientes_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
+		},
+		routeProductos: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewProducto.loadProductos(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab3");
+							Workspace.createSubContainer("tab__productos", "productos");
+
+							let model = { router: Workspace.router };
+							let prodcutos_collection = new _producto.Productos();
+							prodcutos_collection.add(collection);
+							let view = new ViewProducto({ el: "#content_sub_productos", model: model, collection: prodcutos_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
+		},
+		routeCategorias: (cedula) => {
+			if (_.isNull(cedula) || _.isUndefined(cedula)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			let token = window.sessionStorage.getItem("token");
+			if (_.isNull(token) || _.isUndefined(token)) {
+				Workspace.router.navigate("login", { trigger: true, replace: true });
+				return null;
+			}
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewCategoria.loadCategorias(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab4");
+							Workspace.createSubContainer("tab__categorias", "categorias");
+
+							let model = { router: Workspace.router };
+							let categorias_collection = new _categoria.Categorias();
+							categorias_collection.add(collection);
+							let view = new ViewCategoria({ el: "#content_sub_categorias", model: model, collection: categorias_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
 		}
 	},
 	{
 		router: void 0,
 		ViewActive: void 0,
 		createContainer: () => {
-			if (Workspace.ViewActive !== void 0) Workspace.ViewActive.remove();
+			if (Workspace.ViewActive !== void 0) {
+				Workspace.ViewActive.remove();
+				$("#contentApp").remove();
+			}
 			const el = document.createElement("div");
 			el.setAttribute("id", "contentApp");
 			el.setAttribute("class", "contentApp");
 			document.getElementById("app").appendChild(el);
 		},
+		createSubContainer: (element, tab) => {
+			const el = document.createElement("div");
+			el.setAttribute("id", "content_sub_" + tab);
+			el.setAttribute("class", "content_sub_" + tab);
+			document.getElementById(element).innerHTML = "";
+			document.getElementById(element).appendChild(el);
+		},
 		posRenderForm: () => {
-			document.querySelectorAll(".writing :is(input, textarea)").forEach((writinginput) => {
-				writinginput.addEventListener("input", () => {
-					if (writinginput.value.trim() !== "") {
-						writinginput.classList.add("has-text");
-					} else {
-						writinginput.classList.remove("has-text");
-					}
-				});
-			});
-
-			document.querySelectorAll(".textarea textarea").forEach((textarea) => {
-				textarea.addEventListener("input", () => {
-					textarea.style.height = "1em";
-					const scrollHeight = textarea.scrollHeight;
-					textarea.style.height = `${scrollHeight}px`;
-				});
-			});
-
 			$("[data-toggle='decrement']").on("click", function (e) {
 				e.preventDefault();
 				let el = document.querySelector("[data-toggle='decrement']");
@@ -236,30 +360,6 @@ var Workspace = Backbone.Router.extend(
 				e.preventDefault();
 				let el = document.querySelector("[data-toggle='increment']");
 				Workspace.incrementValue(el);
-			});
-
-			$("[data-toggle='toggle_seleccion1']").on("click", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion1']");
-				Workspace.toggleSeleccion(el);
-			});
-
-			$("[data-toggle='toggle_seleccion2']").on("click", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion2']");
-				Workspace.toggleSeleccion(el);
-			});
-
-			$("[data-toggle='toggle_seleccion2']").on("onmousedown", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion2']");
-				Workspace.capturarEstado(el);
-			});
-
-			$("[data-toggle='toggle_seleccion1']").on("onmousedown", function (e) {
-				e.preventDefault();
-				let el = document.querySelector("[data-toggle='toggle_seleccion1']");
-				Workspace.capturarEstado(el);
 			});
 		},
 		validaAuthToken: async (token, callback = void 0) => {
@@ -311,20 +411,6 @@ var Workspace = Backbone.Router.extend(
 				input.value = parseInt(input.value) - 1;
 			}
 		},
-		toggleSeleccion: (label) => {
-			var radioButton = label.querySelector('input[type="radio"]');
-			var estadoAnterior = radioButton.getAttribute("data-anterior");
-			if (estadoAnterior === "true") {
-				radioButton.checked = false;
-			} else {
-				radioButton.checked = true;
-			}
-		},
-		capturarEstado: (label) => {
-			var radioButton = label.querySelector('input[type="radio"]');
-			var estadoAnterior = radioButton.checked;
-			radioButton.setAttribute("data-anterior", estadoAnterior);
-		},
 		mostrarNombreArchivo: (input) => {
 			let fileName = input.files[0].name;
 			let archivoTexto = input.parentNode.querySelector(".text");
@@ -334,14 +420,15 @@ var Workspace = Backbone.Router.extend(
 		},
 		seleccionarArchivo: () => {
 			let archivoInput = document.querySelector("#archivo");
-			if (archivoInput.value) {
-				archivoInput.value = null;
+			let value = $(archivoInput).val();
+			if (value) {
+				$(archivoInput).val(null);
 				let archivoTexto = archivoInput.parentNode.querySelector(".text");
-				archivoTexto.innerText = "Añadir archivo";
+				$(archivoTexto).text("Añadir archivo");
 				let viewElement = archivoInput.parentNode.querySelector(".view");
 				viewElement.classList.remove("file-select");
 			} else {
-				archivoInput.click();
+				$(archivoInput).trigger("click");
 			}
 		},
 		applyOpenStyle: (selectElement) => {
@@ -363,48 +450,23 @@ var Workspace = Backbone.Router.extend(
 			input.parentNode.querySelector(".thumb").style.left = `calc(${percentage}% - 12px)`;
 			input.parentNode.querySelector(".progress-bar").style.width = `calc(${percentage}% + 12px)`;
 		},
-		nestedTabSelect: (tabsElement='ul.tabs', currentElement='active') => {
-			const tabs = tabsElement ?? 'ul.tabs';
-			const currentClass = currentElement ?? 'active';
-			
-			document.querySelectorAll(tabs).forEach(function (tabContainer) {
-				let activeLink, activeContent;
-				const links = Array.from(tabContainer.querySelectorAll("a"));
-			
-				activeLink = links.find(function (link) {
-					return link.getAttribute("data-href") === location.hash;
-				}) || links[0];
+		contentTabs: (cedula, tabActive) => {
+			let template = _.template(document.getElementById("tmp_tabs_content").innerHTML);
+			$("#contentApp").remove();
+			Workspace.createContainer();
+			const tabs = [
+				{ disabled: false, current: "tab1", name: "home", label: "Ventas" },
+				{ disabled: false, current: "tab2", name: "clientes", label: "Clientes" },
+				{ disabled: false, current: "tab3", name: "productos", label: "Productos" },
+				{ disabled: false, current: "tab4", name: "categorias", label: "Categorias" }
+			];
+			$("#contentApp").html(template({ title: null, tabs: tabs }));
+			NesteTab("ul.tabs", "active", tabActive);
 
-				activeLink.classList.add(currentClass);
-			
-				activeContent = document.querySelector(activeLink.getAttribute("data-href"));
-				activeContent.classList.add(currentClass);
-			
-				links.forEach(function (link) {
-					if (link !== activeLink) {
-						const content = document.querySelector(link.getAttribute("data-href"));
-						content.classList.remove(currentClass);
-					}
-				});
-			
-				tabContainer.addEventListener("click", function (e) {
-					//valida link
-					if (e.target.tagName === "A") {
-						// Make the old tab inactive.
-						activeLink.classList.remove(currentClass);
-						activeContent.classList.remove(currentClass);
-				
-						// Update the variables with the new link and content.
-						activeLink = e.target;
-						activeContent = document.querySelector(activeLink.getAttribute("data-href"));
-				
-						// Make the tab active.
-						activeLink.classList.add(currentClass);
-						activeContent.classList.add(currentClass);
-				
-						e.preventDefault();
-					}
-				});
+			$("#contentApp").on("click", "a[toggle-event='tab']", (e) => {
+				e.preventDefault();
+				const route = $(e.currentTarget).attr("data-name");
+				Workspace.router.navigate(route + "/" + cedula, { trigger: true });
 			});
 		}
 	}

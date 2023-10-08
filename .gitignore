@@ -25,10 +25,5 @@ dist-ssr
 *.ntvs*
 *.sln
 *.sw?
-public/
-!public/avatar1.png
-!public/avatar2.png
-!public/avatar3.png
-!public/avatar4.png
-!public/coffee.jpg
-!public/favicon.ico
+public/*.css
+public/*.ico

@@ -3,6 +3,7 @@ import Backbone from "backbone";
 import _ from "underscore";
 import Utils from "../../lib/utils";
 import ViewVentaFirmeza from "./venta_firmeza.view";
+import moment from "moment";
 
 const ViewHome = Backbone.View.extend(
 	{
@@ -68,10 +69,46 @@ const ViewHome = Backbone.View.extend(
 			if (window.confirm("Confirma que desea borrar el registro") === false) {
 				return false;
 			} else {
+				let scope = this;
 				let _id = $(e.currentTarget).attr("data-id");
 				let entity = this.collection.get(_id);
-				ViewHome.rowsViews[entity.cid].remove();
-				this.collection.remove(_id);
+
+				if (window.confirm("Confirma que los datos son correctos para continuar") === false) {
+					return false;
+				} else {
+					let token = window.sessionStorage.getItem("token");
+					Backbone.ajax({
+						method: "DELETE",
+						url: Utils.getUrl("ventas/remove/" + _id),
+						dataType: "JSON",
+						headers: {
+							"X-Requested-With": "XMLHttpRequest"
+						},
+						data: entity.toJSON(),
+						beforeSend: (xhr) => {
+							xhr.setRequestHeader("Authentication", token);
+						}
+					})
+						.done(function (res) {
+							if (res.success == true) {
+								alert("Ok la venta se completo con éxito");
+								ViewHome.rowsViews[entity.cid].remove();
+								scope.collection.remove(_id);
+							} else {
+								alert("Error no esposible el registro " + res.msj);
+							}
+						})
+						.fail(function (err) {
+							let error;
+							if (err.status == 0) {
+								error = err.statusText + ", no hay respuesta del servidor.";
+							} else {
+								error = err.responseText;
+							}
+							alert("Error, en la autenticación del usuario \n" + error);
+						})
+						.always(() => {});
+				}
 			}
 		},
 		createAction: function (e) {
@@ -111,6 +148,7 @@ const ViewHome = Backbone.View.extend(
 			let el = document.getElementById("showRowsTable");
 			if (collection.length > 0) {
 				collection.forEach(function (model) {
+					model.set("fecha", moment(model.get("fecha")).format("YYYY-MM-DD"));
 					let view = new ViewVentaFirmeza({ model: model, tagName: "tr" });
 					ViewHome.rowsViews[model.cid] = view;
 					el.appendChild(view.render().el);

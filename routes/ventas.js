@@ -8,9 +8,10 @@ const VentaDetalle = require("../models/venta_detalle");
 const VentaSeeder = require("../seeders/venta_seeder");
 const VentaDetalleSeeder = require("../seeders/venta_detalle_seeder");
 const { mongoose } = require("mongoose");
+const Producto = require("../models/producto");
 
 //middleware decodeUserToken
-router.get("/all", async function (req, res, next) {
+router.get("/all", decodeUserToken, async function (req, res, next) {
 	let ventas = await Venta.find().populate("cliente").populate("user");
 	let ai = 0;
 	while (ai < ventas.length) {
@@ -75,46 +76,59 @@ router.post("/create", async function (req, res, next) {
 	} catch (error) {
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
 		});
 	}
 });
 
-router.put("/up/:id", async function (req, res, next) {
+router.post("/api_create", decodeUserToken, async function (req, res, next) {
 	try {
-		const { estado, fecha, valor, user, cliente, detalles } = req.body;
-		const _id = req.params.id;
-
+		const { estado, fecha, valor, user, cliente_nombre, cliente_apellido, cliente_cedula, detalles } = req.body;
+		const last = await Venta.find().sort({ serial: -1 }).limit(1);
 		const userEntity = await User.findOne().where("cedula").equals(user);
-		const clienteEntity = await Cliente.findOne().where("cedula").equals(cliente);
+		let clienteEntity = await Cliente.findOne().where("cedula").equals(cliente_cedula);
 
-		const entity = await Venta.findById(_id);
-		entity.estado = estado;
-		entity.fecha = fecha;
-		entity.valor = valor;
-		entity.user = userEntity._id;
-		entity.cliente = clienteEntity._id;
+		if (clienteEntity == null) {
+			clienteEntity = new Cliente({
+				_id: new mongoose.Types.ObjectId(),
+				cedula: cliente_cedula,
+				nombres: cliente_nombre,
+				apellidos: cliente_apellido
+			});
+			await clienteEntity.save();
+		}
+
+		const entity = new Venta({
+			_id: new mongoose.Types.ObjectId(),
+			serial: last.length > 0 ? last[0].serial + 1 : 1,
+			estado: estado,
+			fecha: fecha,
+			valor: valor,
+			user: userEntity._id,
+			cliente: clienteEntity._id
+		});
 
 		await entity.save();
 
 		let collection = [];
-		let ai = 0;
-		while (ai < detalles.length) {
-			let ventaDetalle = detalles[ai];
+		let ventaDetalle, entityDetalle, productoEntity;
 
-			let entityDetalle = null;
-			if (ventaDetalle._id === null) {
-				ventaDetalle.venta = entity._id;
-				entityDetalle = new VentaDetalle(ventaDetalle);
+		ai = 0;
+		while (ai < detalles.length) {
+			ventaDetalle = detalles[ai];
+			productoEntity = await Producto.findById(ventaDetalle.producto);
+			if (productoEntity) {
+				entityDetalle = new VentaDetalle({
+					_id: new mongoose.Types.ObjectId(),
+					venta: entity._id,
+					producto: productoEntity._id,
+					cantidad: ventaDetalle.cantidad,
+					subtotal: ventaDetalle.valor
+				});
+
 				await entityDetalle.save();
-			} else {
-				const entityDetalle = await VentaDetalle.findById(ventaDetalle._id);
-				entityDetalle.producto = ventaDetalle.producto;
-				entityDetalle.cantidad = ventaDetalle.cantidad;
-				entityDetalle.subtotal = ventaDetalle.subtotal;
-				await entityDetalle.save();
+				collection.push(entityDetalle);
 			}
-			collection.push(entityDetalle);
 			ai++;
 		}
 
@@ -124,9 +138,33 @@ router.put("/up/:id", async function (req, res, next) {
 			entity: entity
 		});
 	} catch (error) {
+		console.log(error);
 		res.status(304).json({
 			success: false,
-			message: error.message
+			message: error
+		});
+	}
+});
+
+router.put("/up/:id", async function (req, res, next) {
+	try {
+		const { estado, fecha, valor } = req.body;
+		const _id = req.params.id;
+		const entity = await Venta.findById(_id);
+		entity.estado = estado;
+		entity.fecha = fecha;
+		entity.valor = valor;
+		await entity.save();
+
+		res.status(201).json({
+			success: true,
+			entity: entity
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(304).json({
+			success: false,
+			message: error
 		});
 	}
 });
@@ -178,6 +216,39 @@ router.delete("/detalles", async function (req, res, next) {
 		success: true,
 		collection: collectionEmpty
 	});
+});
+
+router.delete("/remove/:id", decodeUserToken, async function (req, res, next) {
+	try {
+		const _id = req.params.id;
+		let entity = await Venta.findById(_id);
+		if (entity == null) {
+			res.status(304).json({
+				success: true,
+				message: "La entidad no existe"
+			});
+			return res;
+		}
+		let _ventaDetalles = await VentaDetalle.find().where("venta").equals(_id);
+		let ai = 0;
+		while (ai < _ventaDetalles.length) {
+			let ventaDetalle = _ventaDetalles[ai];
+			await VentaDetalle.deleteOne(ventaDetalle);
+			ai++;
+		}
+
+		await Venta.findByIdAndRemove(_id);
+		res.status(201).json({
+			success: true,
+			message: "Registro borrado con éxito"
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(304).json({
+			success: false,
+			message: error
+		});
+	}
 });
 
 module.exports = router;
