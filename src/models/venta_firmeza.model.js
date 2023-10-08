@@ -8,10 +8,11 @@ const DetalleFirme = Backbone.Model.extend({
 	idAttribute: "producto",
 	defaults: {
 		producto: void 0,
-		cantidad: void 0,
-		valor: void 0,
+		cantidad: 0,
+		valor: 0,
 		nombre: void 0,
-		photo: void 0
+		photo: void 0,
+		precio: 0
 	}
 });
 
@@ -32,11 +33,11 @@ const VentaFirme = Backbone.Model.extend({
 		cliente: void 0,
 		estado: void 0,
 		fecha: void 0,
-		valor: void 0,
+		valor: 0,
 		user: void 0,
 		cliente_nombre: void 0,
 		cliente_apellido: void 0,
-		cliente_cedula: void 0,
+		cliente_cedula: 0,
 		detalles: []
 	}
 });

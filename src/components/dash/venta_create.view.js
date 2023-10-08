@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Backbone from "backbone";
+import Qs from "qs";
 import _ from "underscore";
 import Utils from "../../lib/utils";
 import NesteTab from "../../lib/nestedTab";
@@ -18,7 +19,6 @@ const VentaCreate = Backbone.View.extend(
 		render: function () {
 			VentaCreate.detalleProductos = this.collection;
 			let template = _.template(document.getElementById("tmp_venta_create").innerHTML);
-			console.log("Venta", this.model.toJSON());
 			$(this.$el).html(
 				template({
 					venta: this.model.toJSON(),
@@ -109,10 +109,11 @@ const ViewVentaCreate = Backbone.View.extend(
 				fecha: moment().format("YYYY-MM-DD"),
 				user: window.sessionStorage.getItem("cedula"),
 				estado: "P",
-				cliente_cedula: "",
+				cliente_cedula: 0,
 				cliente_nombre: "",
 				cliente_apellido: "",
-				detalles: []
+				detalles: [],
+				valor: 0
 			});
 
 			new VentaCreate({
@@ -139,7 +140,8 @@ const ViewVentaCreate = Backbone.View.extend(
 			"click #btnRegresar": "regresarAction",
 			"click a[toggle-event='selected']": "categoriAction",
 			"click a[toggle-event='producto']": "addProductAction",
-			"click #btnEnviar": "sendAction"
+			"click #btnEnviar": "sendAction",
+			"change [toggle-detalles='productos']": "cambioValorAction"
 		},
 		cleanAction: (e) => {
 			e.preventDefault();
@@ -173,21 +175,35 @@ const ViewVentaCreate = Backbone.View.extend(
 				nombre: model.get("detalle"),
 				photo: model.get("photo"),
 				cantidad: 1,
-				valor: model.get("precio")
+				valor: model.get("precio"),
+				precio: model.get("precio")
 			});
 			$('[data-name="pedido"]').removeClass("disabled");
 		},
 		sendAction: function (e) {
 			e.preventDefault();
+			const cedula = window.sessionStorage.getItem("cedula");
 			let scope = this;
 			let formData = $("form").serializeArray();
 			let token = {};
-			_.each(formData, (row, item) => {
-				token[row.name] = row.value;
+			_.each(formData, function (row, item) {
+				if (row.name.indexOf("detalles") == -1) {
+					token[row.name] = row.value;
+				}
+			});
+			let total = 0;
+			document.querySelectorAll("[toggle-detalles='productos']").forEach(function (element) {
+				const target = $(element);
+				const model = ViewVentaCreate.detalleFirmes.get(target.attr("id"));
+				model.set("cantidad", target.val());
+				let subtotal = parseInt(model.get("cantidad")) * parseInt(model.get("precio"));
+				model.set("valor", subtotal);
+				total += subtotal;
 			});
 
 			let entity = ViewVentaCreate.ventaFirme.clone();
 			entity.set(token);
+			entity.set({ valor: total });
 			entity.set({ detalles: ViewVentaCreate.detalleFirmes.toJSON() });
 
 			if (!entity.isValid()) {
@@ -199,21 +215,29 @@ const ViewVentaCreate = Backbone.View.extend(
 			if (window.confirm("Confirma que los datos son correctos para continuar") === false) {
 				return false;
 			} else {
-				Backbone.emulateJSON = true;
+				let token = window.sessionStorage.getItem("token");
 				Backbone.ajax({
 					method: "POST",
 					url: Utils.getUrl("ventas/api_create"),
 					dataType: "JSON",
-					data: entity.toJSON()
+					headers: {
+						"X-Requested-With": "XMLHttpRequest"
+					},
+					data: entity.toJSON(),
+					beforeSend: (xhr) => {
+						xhr.setRequestHeader("Authentication", token);
+					}
 				})
-					.done((res) => {
+					.done(function (res) {
 						if (res.success == true) {
 							alert("Ok la venta se completo con éxito");
-							scope.model.router.navigate("home/" + res.entity.cedula, { trigger: true, replace: true });
+							scope.model.router.navigate("home/" + cedula, { trigger: true, replace: true });
 							scope.remove();
+						} else {
+							alert("Error no esposible el registro " + res.msj);
 						}
 					})
-					.fail((err) => {
+					.fail(function (err) {
 						let error;
 						if (err.status == 0) {
 							error = err.statusText + ", no hay respuesta del servidor.";
@@ -224,6 +248,19 @@ const ViewVentaCreate = Backbone.View.extend(
 					})
 					.always(() => {});
 			}
+		},
+		cambioValorAction: function (e) {
+			e.preventDefault();
+			let total = 0;
+			document.querySelectorAll("[toggle-detalles='productos']").forEach(function (element) {
+				const target = $(element);
+				const model = ViewVentaCreate.detalleFirmes.get(target.attr("id"));
+				model.set("cantidad", target.val());
+				let subtotal = parseInt(model.get("cantidad")) * parseInt(model.get("precio"));
+				model.set("valor", subtotal);
+				total += subtotal;
+			});
+			$("[name='valor']").val(total);
 		}
 	},
 	{
@@ -237,6 +274,9 @@ const ViewVentaCreate = Backbone.View.extend(
 				type: "GET",
 				url: Utils.getUrl("categorias"),
 				dataType: "JSON",
+				headers: {
+					"X-Requested-With": "XMLHttpRequest"
+				},
 				beforeSend: (xhr) => {
 					xhr.setRequestHeader("Authentication", token);
 				}
@@ -263,6 +303,9 @@ const ViewVentaCreate = Backbone.View.extend(
 				type: "GET",
 				url: Utils.getUrl("productos"),
 				dataType: "JSON",
+				headers: {
+					"X-Requested-With": "XMLHttpRequest"
+				},
 				beforeSend: (xhr) => {
 					xhr.setRequestHeader("Authentication", token);
 				}

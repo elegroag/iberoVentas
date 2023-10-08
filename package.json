@@ -22,6 +22,7 @@
     "moment": "^2.29.4",
     "mongoose": "^7.5.3",
     "morgan": "~1.9.1",
+    "qs": "^6.11.2",
     "serve-favicon": "^2.5.0",
     "underscore": "^1.13.6"
   },

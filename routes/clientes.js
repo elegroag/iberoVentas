@@ -2,8 +2,9 @@ var express = require("express");
 var router = express.Router();
 const Cliente = require("../models/cliente");
 const ClienteSeeder = require("../seeders/cliente_seeder");
+const { decodeUserToken } = require("../bin/passport-auth");
 
-router.get("/", async function (req, res, next) {
+router.get("/", decodeUserToken, async function (req, res, next) {
 	const clientes = await Cliente.find();
 	res.status(201).json({
 		success: true,
@@ -22,7 +23,7 @@ router.post("/crear", async function (req, res, next) {
 	});
 });
 
-router.post("/create", async function (req, res, next) {
+router.post("/create", decodeUserToken, async function (req, res, next) {
 	try {
 		const { cedula, nombres, apellidos } = req.body;
 
@@ -69,7 +70,7 @@ router.get("/:cliente", async function (req, res, next) {
 	});
 });
 
-router.put("/up/:id", async function (req, res, next) {
+router.put("/up/:id", decodeUserToken, async function (req, res, next) {
 	try {
 		const { cedula, nombres, apellidos } = req.body;
 		const _id = req.params.id;

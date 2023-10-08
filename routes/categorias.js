@@ -2,8 +2,9 @@ var express = require("express");
 var router = express.Router();
 const Categoria = require("../models/categoria");
 const CategoriaSeeder = require("../seeders/categoria_seeder");
+const { decodeUserToken } = require("../bin/passport-auth");
 
-router.get("/", async function (req, res, next) {
+router.get("/", decodeUserToken, async function (req, res, next) {
 	let collectionCategorias = await Categoria.find();
 	res.status(201).json({
 		success: true,
@@ -22,7 +23,7 @@ router.post("/crear", async function (req, res, next) {
 	});
 });
 
-router.post("/create", async function (req, res, next) {
+router.post("/create", decodeUserToken, async function (req, res, next) {
 	try {
 		const { detalle, photo, tipo, estado } = req.body;
 		const last = await Categoria.find().sort({ serial: -1 }).limit(1);
@@ -49,7 +50,7 @@ router.post("/create", async function (req, res, next) {
 	}
 });
 
-router.put("/up/:id", async function (req, res, next) {
+router.put("/up/:id", decodeUserToken, async function (req, res, next) {
 	try {
 		const { detalle, photo, tipo, estado } = req.body;
 		const _id = req.params.id;

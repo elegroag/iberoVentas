@@ -30,8 +30,7 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
+/* app.use(express.urlencoded({ extended: false }));  no usar para api-rest*/
 app.use(
 	bodyParser.urlencoded({
 		extended: true

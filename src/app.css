@@ -847,7 +847,7 @@ h1 {
 .btn-md {
   font-size: 0.9rem;
   padding: 5px 9px;
-  border-radius: 1px;
+  border-radius: 10px;
   cursor: pointer;
   margin: 3px;
 }
@@ -873,7 +873,7 @@ h1 {
 }
 
 .green {
-  background: #19cc31;
+  background: #37a346;
 }
 
 .list-group {
@@ -1042,4 +1042,17 @@ ul.list-group li a {
 }
 ul.list-group li a label{
   cursor: pointer;
+}
+
+.list-item a img,
+.list-item img {
+  width: 50px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.list-item .card img{
+  width: 150px;
+  height: 140px;
+  border-radius: 20px;
 }

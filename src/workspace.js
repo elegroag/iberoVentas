@@ -7,14 +7,20 @@ import ViewSignup from "./components/auth/signup.view";
 import ViewChangepass from "./components/auth/changepass.view";
 import ViewRecoveryUser from "./components/auth/recovery_user.view";
 import ViewHome from "./components/dash/home.view";
+import ViewCliente from "./components/clientes/clientes.view";
+import ViewProducto from "./components/productos/productos.view";
 import ViewPerfil from "./components/dash/perfil.view";
-import _vfm from "./models/venta_firmeza.model";
+import _venta from "./models/venta.model";
+import _cliente from "./models/cliente.model";
+import _categoria from "./models/categoria.model";
+import _producto from "./models/producto.model";
 import Utils from "./lib/utils";
 import ViewVentaCreate from "./components/dash/venta_create.view";
 import ViewVentaShow from "./components/dash/venta_show.view";
 import ViewVentaEdita from "./components/dash/venta_edita.view";
 import NesteTab from "./lib/nestedTab";
 import eventosDom from "./lib/eventosDom";
+import ViewCategoria from "./components/categorias/categorias.view";
 
 var Workspace = Backbone.Router.extend(
 	{
@@ -119,7 +125,7 @@ var Workspace = Backbone.Router.extend(
 						} else {
 							Workspace.createSubContainer("tab__home", "home");
 							let model = { router: Workspace.router };
-							let ventas_collection = new _vfm.VentaFirmes();
+							let ventas_collection = new _venta.Ventas();
 							ventas_collection.add(collection, { merge: true });
 							let view = new ViewHome({ el: "#content_sub_home", model: model, collection: ventas_collection });
 							Workspace.ViewActive = view.render().el;
@@ -167,22 +173,23 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			ViewHome.buscarListaVentas(token, (collection) => {
+			ViewHome.buscarListaVentas(token, function (collection) {
 				if (_.isNull(collection)) {
 					alert("La session ha finalizado");
 					Workspace.router.navigate("login", { trigger: true, replace: true });
 					return null;
 				} else {
 					Workspace.createContainer();
+					let ventasCollection = new _venta.Ventas();
+					ventasCollection.add(collection);
 
-					let ventas_collection = new _vfm.VentaFirmes();
-					ventas_collection.add(collection, { merge: true });
-					let entity = ventas_collection.get(id);
+					let entity = ventasCollection.get(id);
+					console.log(ventasCollection.toJSON());
+
 					let model = { router: Workspace.router, entity: entity };
 
 					let view = new ViewVentaEdita({ el: "#contentApp", model: model });
 					Workspace.ViewActive = view.render().el;
-					Workspace.posRenderForm();
 				}
 			});
 		},
@@ -204,7 +211,7 @@ var Workspace = Backbone.Router.extend(
 				} else {
 					Workspace.createContainer();
 
-					let ventas_collection = new _vfm.VentaFirmes();
+					let ventas_collection = new _venta.Ventas();
 					ventas_collection.add(collection, { merge: true });
 					let entity = ventas_collection.get(id);
 					let model = { router: Workspace.router, entity: entity };
@@ -225,8 +232,30 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			Workspace.contentTabs(cedula, "#tab2");
-			Workspace.createSubContainer("tab__clientes", "clientes");
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewCliente.loadClientes(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab2");
+							Workspace.createSubContainer("tab__clientes", "clientes");
+
+							let model = { router: Workspace.router };
+							let clientes_collection = new _cliente.Clientes();
+							clientes_collection.add(collection);
+							let view = new ViewCliente({ el: "#content_sub_clientes", model: model, collection: clientes_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
 		},
 		routeProductos: (cedula) => {
 			if (_.isNull(cedula) || _.isUndefined(cedula)) {
@@ -238,8 +267,31 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			Workspace.contentTabs(cedula, "#tab3");
-			Workspace.createSubContainer("tab__productos", "productos");
+
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewProducto.loadProductos(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab3");
+							Workspace.createSubContainer("tab__productos", "productos");
+
+							let model = { router: Workspace.router };
+							let prodcutos_collection = new _producto.Productos();
+							prodcutos_collection.add(collection);
+							let view = new ViewProducto({ el: "#content_sub_productos", model: model, collection: prodcutos_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
 		},
 		routeCategorias: (cedula) => {
 			if (_.isNull(cedula) || _.isUndefined(cedula)) {
@@ -251,8 +303,30 @@ var Workspace = Backbone.Router.extend(
 				Workspace.router.navigate("login", { trigger: true, replace: true });
 				return null;
 			}
-			Workspace.contentTabs(cedula, "#tab4");
-			Workspace.createSubContainer("tab__categorias", "categorias");
+			Workspace.validaAuthToken(token, (result) => {
+				if (_.isNull(result)) {
+					alert("La session ha finalizado");
+					Workspace.router.navigate("login", { trigger: true, replace: true });
+					return null;
+				} else {
+					ViewCategoria.loadCategorias(token, function (collection) {
+						if (_.isNull(collection)) {
+							alert("La session ha finalizado");
+							Workspace.router.navigate("login", { trigger: true, replace: true });
+							return null;
+						} else {
+							Workspace.contentTabs(cedula, "#tab4");
+							Workspace.createSubContainer("tab__categorias", "categorias");
+
+							let model = { router: Workspace.router };
+							let categorias_collection = new _categoria.Categorias();
+							categorias_collection.add(collection);
+							let view = new ViewCategoria({ el: "#content_sub_categorias", model: model, collection: categorias_collection });
+							Workspace.ViewActive = view.render().el;
+						}
+					});
+				}
+			});
 		}
 	},
 	{
